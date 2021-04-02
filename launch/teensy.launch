@@ -1,0 +1,12 @@
+<launch>
+
+    <node name="serial_node"        pkg="rosserial_python"      type="serial_node.py">
+      <param name="port"              type="string"               value="/dev/teensy"/>
+      <param name="baud"              type="int"                  value="57600"/>
+      </node>
+    <node name="teensy_handler" pkg="kcctcore" type="teensy_handler">
+      <remap from="odom" to="odometry/wheel"/>
+      <remap from="imu/data" to="imu/data_raw"/>
+    </node>
+
+</launch>

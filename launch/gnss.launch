@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="tf" type="static_transform_publisher" name="gps_transform" args="0 0 0 0 0 0 base_link gps 100"/>
+    <include file="$(find ublox_gps)/launch/ublox_zed-f9p.launch"/>
+  </launch>

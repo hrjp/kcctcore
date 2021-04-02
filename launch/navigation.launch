@@ -1,0 +1,11 @@
+<launch>
+    <include file="$(find kcctcore)/launch/sensor.launch"/>
+    <include file="$(find kcctnavigation)/launch/pcl_handler.launch"/>
+    <include file="$(find waypoint_tools)/launch/path_display.launch"/>
+    <node name="path_tracking" pkg="kcctnavigation" type="path_tracking" output="screen"/>
+    <node name="emergency_stoper" pkg="kcctnavigation" type="emergency_stoper" output="screen"/>
+    <node name="person_tracking" pkg="kcctnavigation" type="person_tracking" output="screen"/>
+    <node name="navigation_master" pkg="kcctcore" type="navigation_master" output="screen"/>
+    <!--<include file="$(find imageProcessor)/launch/colorTracking.launch"/>-->
+    <node name="initial3d" pkg="kcctplugin" type="3d_initial_pose" output="screen"/>
+</launch>

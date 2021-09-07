@@ -1,4 +1,6 @@
 <launch>
+	<arg name="sim" default="false" />
+    
     <include file="$(find kcctcore)/launch/sensor.launch"/>
     <include file="$(find kcctnavigation)/launch/pcl_handler.launch"/>
     <include file="$(find waypoint_tools)/launch/path_display.launch"/>

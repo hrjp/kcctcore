@@ -1,10 +1,12 @@
 <launch>
 
-   <arg name="map_file" default="$(find kcctslam)/config/map/sim1.yaml" />
+   <arg name="map_file" default="$(find kcctcore)/config/map/sim1.yaml" />
 
 
 
-	<node respawn="true" name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)"><remap from="/map" to="/map" /></node>
+	<node respawn="true" name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)">
+		<remap from="/map" to="/map" />
+	</node>
 	
 	
 	

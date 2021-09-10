@@ -11,7 +11,7 @@
 
     <group if="$(arg 2d)">
         <include file="$(find kcctcore)/launch/amcl.launch"/>
-        <node pkg="rviz" type="rviz" name="rviz" args="-d $(find kcctcore)/config/rviz/3d_navigation.rviz" />
+        <node pkg="rviz" type="rviz" name="rviz" args="-d $(find kcctcore)/config/rviz/navigation2d.rviz" />
     </group>
     <group unless="$(arg 2d)">
         

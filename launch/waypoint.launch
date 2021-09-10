@@ -4,7 +4,6 @@
 
     <group if="$(arg sim)">
         <include file="$(find kcctcore)/launch/sensorsim.launch"/>
-        <include file="$(find kcctcore)/launch/joycon.launch"/>
     </group>
     <group unless="$(arg sim)">
         <include file="$(find kcctcore)/launch/sensor.launch"/>

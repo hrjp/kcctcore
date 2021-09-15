@@ -7,7 +7,7 @@
   <arg name="use_cad_map" default="false" if="$(arg use_pointcloud_map)" />
   <arg name="use_cad_map" default="true" unless="$(arg use_pointcloud_map)" />
   <arg name="map_objs" unless="$(arg use_pointcloud_map)" />
-  <arg name="map_pcd" value="$(find kcctcore)/config/pcd/ougi4.pcd" if="$(arg use_pointcloud_map)" />
+  <arg name="map_pcd" value="$(find kcctcore)/config/pcd/g1.pcd" if="$(arg use_pointcloud_map)" />
   <arg name="map_scale" default="1.0" />
   <arg name="map_offset_x" default="0.0" />
   <arg name="map_offset_y" default="0.0" />
@@ -15,15 +15,14 @@
   <arg name="use_bag_file" default="false" />
   <arg name="bag_file" if="$(arg use_bag_file)" />
 
-  <param name="/use_sim_time" value="true" if="$(arg use_bag_file)" />
+  <!--<param name="/use_sim_time" value="true" if="$(arg use_bag_file)" />-->
   <node pkg="rosbag" type="play" name="playback" args="--clock $(arg bag_file)"
       if="$(arg use_bag_file)">
     <remap from="odom" to="odom_unused" if="$(arg without_odom)" />
     <remap from="imu/data" to="imu/data_unused" if="$(arg without_imu)" />
   </node>
 
-  <arg name="config_file" default="$(find kcctcore)/config/mcl_param/test_localization.yaml"
-      unless="$(eval arg('without_odom') or arg('without_imu'))" />
+  <arg name="config_file" default="$(find kcctcore)/config/mcl_param/test_localization.yaml" />
       
       <!--
   <arg name="config_file" default="$(find mcl_3dl)/config/test_localization_noodom.yaml"

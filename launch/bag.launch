@@ -7,6 +7,8 @@
       
       <remap from="imu/data" to="imu/data_raw"/>
     </node>
+    <node pkg="kcctcore" type="robot_model_node" name="robot_model_node" output="screen"/>
+    
 
     
 

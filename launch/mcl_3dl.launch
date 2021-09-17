@@ -7,7 +7,7 @@
   <arg name="use_cad_map" default="false" if="$(arg use_pointcloud_map)" />
   <arg name="use_cad_map" default="true" unless="$(arg use_pointcloud_map)" />
   <arg name="map_objs" unless="$(arg use_pointcloud_map)" />
-  <arg name="map_pcd" value="$(find kcctcore)/config/pcd/g1.pcd" if="$(arg use_pointcloud_map)" />
+  <arg name="map_pcd" value="$(find kcctcore)/config/pcd/g2.pcd" if="$(arg use_pointcloud_map)" />
   <arg name="map_scale" default="1.0" />
   <arg name="map_offset_x" default="0.0" />
   <arg name="map_offset_y" default="0.0" />
@@ -22,7 +22,7 @@
     <remap from="imu/data" to="imu/data_unused" if="$(arg without_imu)" />
   </node>
 
-  <arg name="config_file" default="$(find kcctcore)/config/mcl_param/test_localization.yaml" />
+  <arg name="config_file" default="$(find kcctcore)/config/mcl_param/test_localization2.yaml" />
       
       <!--
   <arg name="config_file" default="$(find mcl_3dl)/config/test_localization_noodom.yaml"

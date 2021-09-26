@@ -5,6 +5,7 @@
 * selected_cmd_vel [geometry_msgs::Twist]
 ### subscriber
 * mcl_cmd_vel [geometry_msgs::Twist]
+> path track
 * camera_cmd_vel [geometry_msgs::Twist]
 > for person track
 * buttons [std_msgs::Int32]

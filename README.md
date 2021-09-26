@@ -4,6 +4,8 @@
 ```
 #2d slam
 roslaunch kcctcore navigation.launch sim:=true map_2d:=true
+#simulationを行うなら下記のコマンドを別ターミナルで実行
+roslaunch kcctsim sim.launch
 
 #3d slam
 roslaunch kcctcore navigation.launch sim:=true

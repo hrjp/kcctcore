@@ -17,3 +17,10 @@ enum buttons_status{
     buttons_status_reset,//6
     buttons_status_zpublish//7
 };
+
+//addition status
+enum class robot_status{
+    angleAdjust = 8,
+    safety_stop,//9
+    recovery//10
+};

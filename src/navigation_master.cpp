@@ -11,6 +11,7 @@
 #include <visualization_msgs/MarkerArray.h>
 #include <std_msgs/Int32.h>
 #include <std_msgs/Int32MultiArray.h>
+#include <std_msgs/String.h>
 #include <geometry_msgs/Twist.h>
 #include <nav_msgs/Path.h>
 #include <iostream>
@@ -18,8 +19,9 @@
 #include <fstream>
 #include <sstream>
 
-#include <kcctcore/button_status.h>
-#include <kcctcore/waypoint_type.h>
+#include "kcctcore/button_status.h"
+#include "kcctcore/waypoint_type.h"
+#include "kcctcore/robot_status.h"
 
 using namespace std;
 
@@ -31,6 +33,24 @@ void mcl_cmd_vel_callback(const geometry_msgs::Twist& cmd_vel_){
 geometry_msgs::Twist camera_cmd_vel;
 void camera_cmd_vel_callback(const geometry_msgs::Twist& cmd_vel_){
     camera_cmd_vel=cmd_vel_;
+}
+
+std_msgs::String mode;
+void mode_callback(const std_msgs::String& mode_message)
+{
+    mode = mode_message;
+}
+
+geometry_msgs::Twist recovery_cmd_vel;
+void recovery_cmd_callback(const geometry_msgs::Twist& cmd_message)
+{
+    recovery_cmd_vel = cmd_message;
+}
+
+std_msgs::String recovery_mode;
+void recovery_mode_callback(const std_msgs::String& mode_message)
+{
+    recovery_mode = mode_message;
 }
 
 int button_clicked=0;
@@ -63,7 +83,10 @@ int main(int argc, char **argv){
     //param setting
     ros::NodeHandle pn("~");
 
-    double looprate=100.0;
+    std::string map_id, base_link_id;
+    pnh.param<std::string>("map_frame_id", map_id, "map");
+    pnh.param<std::string>("base_link_frame_id", base_link_id, "base_link");
+    double looprate;
     pn.param<double>("loop_rate",looprate,100.0);
 
      //制御周期10Hz
@@ -81,9 +104,13 @@ int main(int argc, char **argv){
     ros::Subscriber now_wp_sub = lSubscriber.subscribe("waypoint/now", 50, now_wp_callback);
     //waypoint type
     ros::Subscriber wp_type_sub = lSubscriber.subscribe("waypoint/type", 50, wp_type_callback);
+    ros::Subscriber recovery_cmd_sub = nh.subscribe("recovery/cmd_vel", 10, recovery_cmd_callback);
+    ros::Subscriber mode_sub = nh.subscribe("mode_select/mode", 10 , mode_callback);
+    ros::Subscriber recovery_mode_sub = nh.subscribe("recovery/mode", 10 , recovery_mode_callback);
     
     //cmd_vel publisher
     ros::Publisher cmd_pub=n.advertise<geometry_msgs::Twist>("selected_cmd_vel", 1);
+    ros::Publisher mode_pub = nh.advertise<std_msgs::String>("mode", 10);
 
     geometry_msgs::Twist cmd_vel;
     geometry_msgs::Twist zero_vel;
@@ -118,7 +145,7 @@ int main(int argc, char **argv){
 
         if(person_mode){
             cmd_vel=camera_cmd_vel;
-            cout<<"camera_mode"<<endl;
+            std::cout<<"camera_mode"<<std::endl;
         }
         else{
             cmd_vel=mcl_cmd_vel;
@@ -126,6 +153,39 @@ int main(int argc, char **argv){
         
         if(pause_mode){
             cmd_vel=zero_vel;
+        }
+
+
+        //angle adjust
+        if(mode.data == STR(robot_status::angleAdjust)){
+            double diffAngle = arrangeAngle(quat2yaw(targetWpPose.pose.orientation) - nowPosition.getYaw());
+
+            cmd_vel.linear.x = 0;
+            cmd_vel.angular.z = constrain(diffAngle * 1.5, -max_angular_vel, max_angular_vel);
+            if(abs(diffAngle) < 1*M_PI/180){
+                mode.data = STR(robot_status::stop);
+            }
+        }
+        if(recovery_mode.data == STR(robot_status::safety_stop)){
+            mode.data = STR(robot_status::safety_stop);
+        }
+        if(recovery_mode.data == STR(robot_status::run) && mode.data == STR(robot_status::safety_stop)){
+            mode.data = STR(robot_status::run);
+        }
+
+        //recovery mode
+        if(recovery_mode.data == STR(robot_status::recovery)){
+            recovery_init = true;
+            mode.data = STR(robot_status::recovery);
+            cmd_vel = recovery_cmd_vel;
+        }
+        if(recovery_init){
+            if(!(recovery_mode.data == STR(robot_status::recovery))){
+                recovery_init = false;
+
+                run_init = true;
+                mode.data = "run";
+            }
         }
 
         cmd_pub.publish(cmd_vel);

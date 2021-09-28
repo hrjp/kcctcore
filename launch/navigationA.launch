@@ -32,7 +32,7 @@
         <param name="maxVelocity" value="0.7"/>
         <param name="loop_rate" value="10"/>
         <param name="target_deviation" value="1.5"/>
-        <param name="final_target_deviation" value="0.1"/>
+        <param name="final_target_deviation" value="0.4"/>
         <remap from="path" to="waypoint/path"/>
     </node>
 
@@ -64,7 +64,14 @@
         <remap from="pure_posePursuit/cmd_vel" to="mcl_cmd_vel"/>
     </node>
 
-    <node name="emergency_stoper" pkg="kcctnavigation" type="emergency_stoper" output="screen"/>
+    <!--safety function-->
+    <node pkg="kcctnavigation" name="safety_limit" type="safety_limit" output="screen">
+        <rosparam file="$(find kcctcore)/config/nav_param/safety_limit.yaml" command="load" />
+        <remap from="safety_limit/cmd_vel_in" to="selected_cmd_vel"/>
+        <remap from="safety_limit/cmd_vel_out" to="final_cmd_vel"/>
+        <remap from="cloud" to="laser2pc/pc2"/>
+        <remap from="safety_limit/costmap" to="costmap_node/my_costmap/costmap"/>
+     </node>
     <node name="person_tracking" pkg="kcctnavigation" type="person_tracking" output="screen"/>
     <node name="navigation_master" pkg="kcctcore" type="navigation_master" respawn="true" output="screen"/>
     <!--<include file="$(find imageProcessor)/launch/colorTracking.launch"/>-->

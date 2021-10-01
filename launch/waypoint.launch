@@ -1,6 +1,6 @@
 <launch>
-    <arg name="sim" default="true" />
-    <arg name="2d" default="true" />
+    <arg name="sim" default="false" />
+    <arg name="2d" default="false" />
 
     <group if="$(arg sim)">
         <include file="$(find kcctcore)/launch/sensorsim.launch"/>

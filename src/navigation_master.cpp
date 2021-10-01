@@ -19,6 +19,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "kcctcore_t/tf_position.h"
 #include "kcctcore/button_status.h"
 #include "kcctcore/waypoint_type.h"
 #include "kcctcore/robot_status.h"
@@ -74,6 +75,42 @@ void path_callback(const nav_msgs::Path& path_){
     path=path_;
 }
 
+geometry_msgs::PoseStamped targetWpPose;
+void targetWpPose_callback(const geometry_msgs::PoseStamped& poseStamp_message)
+{
+    targetWpPose = poseStamp_message;
+}
+
+geometry_msgs::Pose targetPose;
+void targetPose_callback(const geometry_msgs::Pose& pose_message)
+{
+    targetPose = pose_message;
+}
+
+double quat2yaw(geometry_msgs::Quaternion orientation)
+{
+    double roll, pitch, yaw;
+    tf::Quaternion quat;
+    quaternionMsgToTF(orientation, quat);
+    tf::Matrix3x3(quat).getRPY(roll, pitch, yaw);  //rpy are Pass by Reference
+
+    return yaw;
+}
+
+double arrangeAngle(double angle)
+{
+    while(angle>M_PI)
+    {
+        angle -= 2*M_PI;
+    }
+    while(angle<-M_PI)
+    {
+        angle += 2*M_PI;
+    }
+
+    return angle;
+}
+
 int main(int argc, char **argv){
     
     ros::init(argc, argv, "path_tracking_node");
@@ -84,8 +121,8 @@ int main(int argc, char **argv){
     ros::NodeHandle pn("~");
 
     std::string map_id, base_link_id;
-    pnh.param<std::string>("map_frame_id", map_id, "map");
-    pnh.param<std::string>("base_link_frame_id", base_link_id, "base_link");
+    pn.param<std::string>("map_frame_id", map_id, "map");
+    pn.param<std::string>("base_link_frame_id", base_link_id, "base_link");
     double looprate;
     pn.param<double>("loop_rate",looprate,100.0);
 
@@ -104,13 +141,18 @@ int main(int argc, char **argv){
     ros::Subscriber now_wp_sub = lSubscriber.subscribe("waypoint/now", 50, now_wp_callback);
     //waypoint type
     ros::Subscriber wp_type_sub = lSubscriber.subscribe("waypoint/type", 50, wp_type_callback);
-    ros::Subscriber recovery_cmd_sub = nh.subscribe("recovery/cmd_vel", 10, recovery_cmd_callback);
-    ros::Subscriber mode_sub = nh.subscribe("mode_select/mode", 10 , mode_callback);
-    ros::Subscriber recovery_mode_sub = nh.subscribe("recovery/mode", 10 , recovery_mode_callback);
-    
+    ros::Subscriber recovery_cmd_sub = lSubscriber.subscribe("recovery/cmd_vel", 10, recovery_cmd_callback);
+    ros::Subscriber mode_sub = lSubscriber.subscribe("mode_select/mode", 10 , mode_callback);
+    ros::Subscriber recovery_mode_sub = lSubscriber.subscribe("recovery/mode", 10 , recovery_mode_callback);
+    ros::Subscriber targetWpPose_sub = lSubscriber.subscribe("twist_maneger/targetWpPose_in", 50, targetWpPose_callback);
+    ros::Subscriber targetPose_sub = lSubscriber.subscribe("twist_maneger/targetPose_in", 10 , targetPose_callback);
+
     //cmd_vel publisher
     ros::Publisher cmd_pub=n.advertise<geometry_msgs::Twist>("selected_cmd_vel", 1);
-    ros::Publisher mode_pub = nh.advertise<std_msgs::String>("mode", 10);
+    ros::Publisher mode_pub = n.advertise<std_msgs::String>("mode", 10);
+
+    tf_position nowPosition(map_id, base_link_id, looprate);
+    mode.data = robot_status_str(robot_status::stop);
 
     geometry_msgs::Twist cmd_vel;
     geometry_msgs::Twist zero_vel;
@@ -118,18 +160,24 @@ int main(int argc, char **argv){
     zero_vel.angular.z=0.0;
     bool pause_mode=true;
     bool person_mode=false;
+    bool run_init = true;
+    bool recovery_init = false;
     int wp_stack=0;
 
-    while (n.ok())  {
+    while (n.ok()){
 
         if(button_clicked==buttons_status_start){
             pause_mode=false;
             person_mode=false;
+            mode.data = robot_status_str(robot_status::run);
+
         }
         if(button_clicked==buttons_status_pause){
             pause_mode=true;
+            mode.data = robot_status_str(robot_status::stop);
         }
 
+        //camera
         if(wp_stack<now_wp){
             if(wp_type.at(now_wp)==waypoint_type_camera){
                 std::cout<<"camera mode"<<std::endl;
@@ -150,45 +198,74 @@ int main(int argc, char **argv){
         else{
             cmd_vel=mcl_cmd_vel;
         }
-        
-        if(pause_mode){
+
+        if(run_init){
+            //run init mode
+            if(mode.data == robot_status_str(robot_status::run)){
+                double dx = targetPose.position.x - nowPosition.getPose().position.x;
+                double dy = targetPose.position.y - nowPosition.getPose().position.y;
+                double targetAngle = atan2(dy, dx);
+                double diffAngle = arrangeAngle(targetAngle - nowPosition.getYaw());
+
+                cmd_vel.linear.x = 0;
+                cmd_vel.angular.z = diffAngle * 1.5;
+                if(abs(diffAngle) < 10*M_PI/180){
+                    run_init = false;
+                }
+            }
+        }
+
+        //stop
+        if(mode.data == robot_status_str(robot_status::stop)){
             cmd_vel=zero_vel;
+            run_init = true;
         }
 
 
         //angle adjust
-        if(mode.data == STR(robot_status::angleAdjust)){
+        if(mode.data == robot_status_str(robot_status::angleAdjust)){
             double diffAngle = arrangeAngle(quat2yaw(targetWpPose.pose.orientation) - nowPosition.getYaw());
 
             cmd_vel.linear.x = 0;
-            cmd_vel.angular.z = constrain(diffAngle * 1.5, -max_angular_vel, max_angular_vel);
+            cmd_vel.angular.z = diffAngle * 1.5;
             if(abs(diffAngle) < 1*M_PI/180){
-                mode.data = STR(robot_status::stop);
+                mode.data = robot_status_str(robot_status::stop);
             }
         }
-        if(recovery_mode.data == STR(robot_status::safety_stop)){
-            mode.data = STR(robot_status::safety_stop);
+        if(recovery_mode.data == robot_status_str(robot_status::safety_stop)){
+            mode.data = robot_status_str(robot_status::safety_stop);
         }
-        if(recovery_mode.data == STR(robot_status::run) && mode.data == STR(robot_status::safety_stop)){
-            mode.data = STR(robot_status::run);
+        if(recovery_mode.data == robot_status_str(robot_status::run) && mode.data == robot_status_str(robot_status::safety_stop)){
+            mode.data = robot_status_str(robot_status::run);
+        }
+
+        //safety stop
+        if(recovery_mode.data == robot_status_str(robot_status::safety_stop)){
+            mode.data = robot_status_str(robot_status::safety_stop);
+            cmd_vel = recovery_cmd_vel;
+        }
+        //end safety stop
+        if(recovery_mode.data == robot_status_str(robot_status::run) && mode.data == robot_status_str(robot_status::safety_stop)){
+            mode.data = robot_status_str(robot_status::run);
         }
 
         //recovery mode
-        if(recovery_mode.data == STR(robot_status::recovery)){
+        if(recovery_mode.data == robot_status_str(robot_status::recovery)){
             recovery_init = true;
-            mode.data = STR(robot_status::recovery);
+            mode.data = robot_status_str(robot_status::recovery);
             cmd_vel = recovery_cmd_vel;
         }
         if(recovery_init){
-            if(!(recovery_mode.data == STR(robot_status::recovery))){
+            if(!(recovery_mode.data == robot_status_str(robot_status::recovery))){
                 recovery_init = false;
 
                 run_init = true;
-                mode.data = "run";
+                mode.data = robot_status_str(robot_status::run);
             }
         }
 
         cmd_pub.publish(cmd_vel);
+        mode_pub.publish(mode);
 
 
 
@@ -196,7 +273,7 @@ int main(int argc, char **argv){
         button_clicked=buttons_status_free;
         ros::spinOnce();//subsucriberの割り込み関数はこの段階で実装される
         loop_rate.sleep();
-        
+
     }
     
     return 0;

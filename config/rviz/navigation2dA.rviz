@@ -6,6 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /Grid1/Offset1
+        - /Marker1
       Splitter Ratio: 0.49042099714279175
     Tree Height: 406
   - Class: rviz/Selection
@@ -463,6 +464,14 @@ Visualization Manager:
       text size: 36
       top: 460
       width: 350
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /safety_limit/next_robot_position
+      Name: Marker
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -491,25 +500,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 16.684165954589844
+      Distance: 22.515962600708008
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 1.7611725330352783
-        Y: -3.8797147274017334
-        Z: -6.327394485473633
+        X: 1.6414180994033813
+        Y: -3.7528040409088135
+        Z: -6.437832832336426
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.1697964668273926
+      Pitch: 0.9497965574264526
       Target Frame: base_link
       Value: Orbit (rviz)
-      Yaw: 1.642210841178894
+      Yaw: 1.8422106504440308
     Saved: ~
 Window Geometry:
   Displays:

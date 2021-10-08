@@ -6,8 +6,8 @@
 	<param name="baud"              type="int"                  value="57600"/>
 	</node>
 	
-	<!--<include file="$(find kcctcore)/launch/hokuyo_urg.launch"/>-->
-	<include file="$(find kcctcore)/launch/velodyne_2d.launch"/>
+	<include file="$(find kcctcore)/launch/hokuyo_urg_single.launch"/>
+	<include file="$(find kcctcore)/launch/velodyne.launch"/>
 	<node pkg="kcctcore" type="robot_model_node" name="robot_model_node" output="screen"/>
  <node name="teensy_handler" pkg="kcctcore" type="teensy_handler"/>
  <include file="$(find kcctcore)/launch/gnss.launch"/>

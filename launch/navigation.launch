@@ -19,7 +19,10 @@
     
     <include file="$(find kcctnavigation)/launch/pcl_handler.launch"/>
     <include file="$(find waypoint_tools)/launch/path_display.launch"/>
-    <node name="path_tracking" pkg="kcctnavigation" type="path_tracking" output="screen"/>
+    <node name="path_tracking" pkg="kcctnavigation" type="path_tracking" output="screen">
+        <param name="angular_vel_max" value="0.35"/>
+        <param name="vel_max" value="0.5"/>
+    </node>
     <node name="emergency_stoper" pkg="kcctnavigation" type="emergency_stoper" output="screen"/>
     <node name="person_tracking" pkg="kcctnavigation" type="person_tracking" output="screen"/>
     <node name="navigation_master" pkg="kcctcore" type="navigation_master" respawn="true" output="screen"/>

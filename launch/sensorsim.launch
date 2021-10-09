@@ -1,0 +1,21 @@
+<launch>
+        <node pkg="ira_laser_tools" name="laserscan_multi_merger" type="laserscan_multi_merger" output="screen" respawn="true">
+		<param name="destination_frame" value="/camera_link"/>
+		<param name="cloud_destination_topic" value="/merged_cloud"/>
+		<param name="scan_destination_topic" value="/scan"/>
+                <param name="laserscan_topics" value ="/scan1 /scan2"/>
+   		<param name="angle_min" value="-3.14"/>
+  		<param name="angle_max" value="3.14"/>
+	</node>
+	<!--
+	<node pkg="kcctsim" name="twist_remapper" type="twist_remapper.py" output="screen">
+	<remap from="cmd_vel" to="final_cmd_vel" />
+	</node>
+	<node pkg="kcctsim" name="linear_vel_node" type="linear_vel_node.py" output="screen"/>
+
+	<node name="basic_twist_publisher" pkg="kcctslam" type="basic_twist_publisher">
+    	<remap from="cmd_vel" to="final_cmd_vel1"/>
+  	</node>
+	  -->
+
+</launch>

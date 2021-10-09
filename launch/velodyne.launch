@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="tf" type="static_transform_publisher" name="stp_laser_vel" args="0 0 0.8 0.0 0 0 base_link camera_link 100" />
+    <include file="$(find kcctcore)/launch/32e_points.launch"/>
+</launch>

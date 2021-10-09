@@ -1,0 +1,16 @@
+<launch>
+    <node pkg="tf" type="static_transform_publisher" name="stf_hokuyo3d_laser" args="0.225 0.0 0.0 0.0 0.0 0.0 camera_link 2d_blue 100"/>
+	<node pkg="tf" type="static_transform_publisher" name="stp_laser" args="0 0 0.25 0 0 0 base_link camera_link 100" />
+<node name="urg_node" pkg="urg_node" type="urg_node" output="screen">
+ 	<remap from="/scan" to="/scan" />	
+    	<param name="ip_address" value="192.168.1.10"/>
+   	<param name="frame_id" value="2d_blue"/>
+   	<param name="calibrate_time" value="true"/>
+   	<param name="publish_intensity" value="false"/>
+   	<param name="publish_multiecho" value="false"/>
+   	<param name="angle_min" value="-1.5707963"/>
+  	<param name="angle_max" value="1.5707963"/>
+	</node>		
+	
+
+</launch>

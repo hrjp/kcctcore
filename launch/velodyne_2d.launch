@@ -1,5 +1,5 @@
 <launch>
-    <node pkg="tf" type="static_transform_publisher" name="stp_laser" args="0 0 0.8 0.0523 0 0 base_link camera_link 100" />
+    <node pkg="tf" type="static_transform_publisher" name="stp_laser" args="0 0 0.8 0.0 0 0 base_link camera_link 100" />
     <include file="$(find kcctcore)/launch/32e_points.launch"/>
     <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
         <remap from="cloud_in" to="velodyne_points"/>

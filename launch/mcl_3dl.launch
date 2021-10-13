@@ -22,7 +22,7 @@
     <remap from="imu/data" to="imu/data_unused" if="$(arg without_imu)" />
   </node>
 
-  <arg name="config_file" default="$(find kcctcore)/config/mcl_param/test_localization3.yaml" />
+  <arg name="config_file" default="$(find kcctcore)/config/mcl_param/test_localization4.yaml" />
       
       <!--
   <arg name="config_file" default="$(find mcl_3dl)/config/test_localization_noodom.yaml"

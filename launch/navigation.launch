@@ -1,6 +1,6 @@
 <launch>
 	<arg name="sim" default="false" />
-    <arg name="2d" default="false" />
+    <arg name="map_2d" default="false" />
 
     <group if="$(arg sim)">
         <include file="$(find kcctcore)/launch/sensorsim.launch"/>
@@ -9,11 +9,11 @@
         <include file="$(find kcctcore)/launch/sensor.launch"/>
     </group>
 
-    <group if="$(arg 2d)">
+    <group if="$(arg map_2d)">
         <include file="$(find kcctcore)/launch/amcl.launch"/>
         <node pkg="rviz" type="rviz" name="rviz" args="-d $(find kcctcore)/config/rviz/navigation2d.rviz" />
     </group>
-    <group unless="$(arg 2d)">
+    <group unless="$(arg map_2d)">
         
     </group>
     

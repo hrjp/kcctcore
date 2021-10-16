@@ -6,9 +6,9 @@
 
     <group if="$(arg sim)">
         <include file="$(find kcctcore)/launch/sensorsim.launch"/>
-        <include file="$(find kcctsim)/launch/sim.launch">
+        <!--<include file="$(find kcctsim)/launch/sim.launch">
             <arg name="gui" default="$(arg show_gui)"/>
-        </include>
+        </include>-->
     </group>
     <group unless="$(arg sim)">
         <include file="$(find kcctcore)/launch/sensor.launch"/>

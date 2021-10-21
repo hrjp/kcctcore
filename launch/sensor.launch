@@ -10,5 +10,5 @@
 	<include file="$(find kcctcore)/launch/velodyne.launch"/>
 	<node pkg="kcctcore" type="robot_model_node" name="robot_model_node" output="screen"/>
  <node name="teensy_handler" pkg="kcctcore" type="teensy_handler"/>
- <include file="$(find kcctcore)/launch/gnss.launch"/>
+ <!--<include file="$(find kcctcore)/launch/gnss.launch"/>-->
 </launch>

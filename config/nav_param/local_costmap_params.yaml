@@ -2,8 +2,8 @@ my_costmap:
   plugins: 
     - {name: obstacle_layer, type: 'costmap_2d::ObstacleLayer'}
     - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
-  global_frame: map
-  robot_base_frame: base_foot_point
+  global_frame: floor
+  robot_base_frame: base_link
   #footprint: [[0.4,0.4], [-0.65,0.4], [-0.65,-0.4], [0.4,-0.4]]
   footprint: [[-0.65, 0], [-0.45, 0.45], [0, 0.65], [0.45, 0.45], [0.65, 0], [0.45, -0.45], [0, -0.65], [-0.45, -0.45]]
   rolling_window: true

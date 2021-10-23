@@ -17,7 +17,7 @@
         
     </group>
 
-    <node name="initial3d" pkg="kcctplugin" type="3d_initial_pose" output="screen"/>
+    <node name="initial3d" pkg="kcctplugin" type="3d_initial_pose" output="screen" respawn="true"/>
     <include file="$(find waypoint_tools)/launch/waypoint_record.launch"/>
     
 </launch>

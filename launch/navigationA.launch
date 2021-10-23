@@ -2,7 +2,7 @@
 	<arg name="sim" default="false" />
     <arg name="map_2d" default="false" />
     <arg name="show_gui" default="true"/>
-    <arg name="way" default="wpdataA.csv"/>
+    <arg name="way" default="wpdataC.csv"/>
 
     <group if="$(arg sim)">
         <include file="$(find kcctcore)/launch/sensorsim.launch"/>

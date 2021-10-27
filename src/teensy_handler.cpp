@@ -116,12 +116,12 @@ int main(int argc, char **argv){
           odom.twist.twist.angular.x=-float_sensor_data.at(7);
           odom.twist.twist.angular.y=float_sensor_data.at(6);
           odom.twist.twist.angular.z=float_sensor_data.at(8);
-          odom.pose.covariance.at(0)=1.0;
-          odom.pose.covariance.at(7)=1.0;
+          odom.pose.covariance.at(0)=2.0;
+          odom.pose.covariance.at(7)=2.0;
           odom.pose.covariance.at(14)=1.0;//3.0;
           odom.pose.covariance.at(21)=0.00;
           odom.pose.covariance.at(28)=0.00;
-          odom.pose.covariance.at(35)=0.02;
+          odom.pose.covariance.at(35)=0.01;//0.02;
           seq_odom++;
           
           sensor_msgs::Imu imu;

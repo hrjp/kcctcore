@@ -39,7 +39,7 @@
     </node>
 
     <node pkg="kcctnavigation" type="costmap_node" name="costmap_node" respawn="true" >
-        <rosparam command="load" file="$(find kcctcore)/config/nav_param/local_costmap_params.yaml" />
+        <rosparam command="load" file="$(find kcctcore)/config/nav_param/local_costmap_params2.yaml" />
     </node>
 
     <node name="astar_planning_node" pkg="kcctnavigation" type="astar_planning_node" respawn="true" output="screen">

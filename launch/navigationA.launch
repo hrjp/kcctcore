@@ -88,6 +88,11 @@
     </node>
 
     <node name="person_tracking" pkg="kcctnavigation" type="person_tracking" output="screen"/>
+
+    <node name="path_costmap" pkg="kcctnavigation" type="path_costmap" output="screen">
+        
+    </node>
+
     <!--MASTER NODE-->
     <node name="navigation_master" pkg="kcctcore" type="navigation_master" respawn="true" output="screen">
         <param name="base_link_frame_id" value="base_link"/>

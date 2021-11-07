@@ -1,0 +1,38 @@
+<launch>
+    <node pkg="tf" type="static_transform_publisher" name="stf_hokuyo3d_laser" args="0.225 -0.255 0.0 0.0 0.0 0.0 camera_link 2d_blue 100"/>
+	<node pkg="tf" type="static_transform_publisher" name="stf_hokuyo3d_laser2" args="-0.485 0.255 0.0 3.14159 0.0 0.0 camera_link 2d_orange 100"/>
+	<node pkg="tf" type="static_transform_publisher" name="stp_laser" args="0 0 0.25 0 0 0 base_link camera_link 100" />
+<node name="urg_node" pkg="urg_node" type="urg_node" output="screen">
+ 	<remap from="/scan" to="/scan1" />	
+    	<param name="ip_address" value="192.168.1.10"/>
+   	<param name="frame_id" value="2d_blue"/>
+   	<param name="calibrate_time" value="true"/>
+   	<param name="publish_intensity" value="false"/>
+   	<param name="publish_multiecho" value="false"/>
+   	<param name="angle_min" value="-2.35619"/>
+  	<param name="angle_max" value="1.5707963"/>
+	</node>		
+
+	<node name="urg_node2" pkg="urg_node" type="urg_node" output="screen">
+ 	<remap from="/scan" to="/scan2" />
+	<param name="serial_port" value="/dev/utm30lx"/>
+   	<param name="serial_baud" value="115200"/>
+   	<param name="frame_id" value="2d_orange"/>
+   	<param name="calibrate_time" value="true"/>
+   	<param name="publish_intensity" value="false"/>
+   	<param name="publish_multiecho" value="false"/>
+   	<param name="angle_min" value="-2.35619"/>
+  	<param name="angle_max" value="1.5707963"/>
+	</node>
+
+        <node pkg="ira_laser_tools" name="laserscan_multi_merger" type="laserscan_multi_merger" output="screen">
+		<param name="destination_frame" value="/camera_link"/>
+		<param name="cloud_destination_topic" value="/merged_cloud"/>
+		<param name="scan_destination_topic" value="/scan"/>
+                <param name="laserscan_topics" value ="/scan1 /scan2"/>
+   		<param name="angle_min" value="-3.14"/>
+  		<param name="angle_max" value="3.14"/>		
+	</node>
+	
+
+</launch>

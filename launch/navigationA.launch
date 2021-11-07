@@ -2,12 +2,14 @@
 	<arg name="sim" default="false" />
     <arg name="map_2d" default="false" />
     <arg name="show_gui" default="true"/>
-    <arg name="way" default="wpdataA.csv"/>
+    <arg name="way" default="wpdata.csv"/>
+    <arg name="world_name" default="$(find kcctsim)/worlds/autoware.world"/>
 
     <group if="$(arg sim)">
         <include file="$(find kcctcore)/launch/sensorsim.launch"/>
         <include file="$(find kcctsim)/launch/sim.launch">
             <arg name="gui" default="$(arg show_gui)"/>
+            <arg name="world_name" default="$(arg world_name)"/>
         </include>
     </group>
     <group unless="$(arg sim)">

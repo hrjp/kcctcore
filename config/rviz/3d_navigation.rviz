@@ -81,8 +81,8 @@ Visualization Manager:
     - Alpha: 0.10000000149011612
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 20.838226318359375
-        Min Value: -3.337378978729248
+        Max Value: 21.056934356689453
+        Min Value: -1.5558706521987915
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -133,6 +133,29 @@ Visualization Manager:
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 25; 255; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Billboards
+      Line Width: 0.10000000149011612
+      Name: Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: Arrows
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /waypoint/path
+      Unreliable: false
       Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
@@ -189,22 +212,32 @@ Visualization Manager:
       Enabled: true
       Frame Timeout: 15
       Frames:
-        2d_blue:
-          Value: true
         All Enabled: true
+        base_foot_point:
+          Value: true
         base_link:
           Value: true
         camera_link:
           Value: true
         floor:
           Value: true
+        front_lrf_link:
+          Value: true
         imu_link:
+          Value: true
+        left_wheel_link:
           Value: true
         map:
           Value: true
         odom:
           Value: true
-        velodyne_link:
+        rear_lrf_link:
+          Value: true
+        right_wheel_link:
+          Value: true
+        velodyne:
+          Value: true
+        velodyne_base_link:
           Value: true
       Marker Scale: 0.5
       Name: TF
@@ -216,14 +249,23 @@ Visualization Manager:
           floor:
             {}
           odom:
-            base_link:
-              camera_link:
-                2d_blue:
+            base_foot_point:
+              base_link:
+                camera_link:
                   {}
-              imu_link:
-                {}
-              velodyne_link:
-                {}
+                front_lrf_link:
+                  {}
+                imu_link:
+                  {}
+                left_wheel_link:
+                  {}
+                rear_lrf_link:
+                  {}
+                right_wheel_link:
+                  {}
+                velodyne_base_link:
+                  velodyne:
+                    {}
       Update Interval: 0
       Value: true
     - Class: rviz/MarkerArray
@@ -267,7 +309,7 @@ Visualization Manager:
       Marker Topic: /body_model
       Name: MarkerArray
       Namespaces:
-        cmd_vel_display: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -381,29 +423,6 @@ Visualization Manager:
       size: 128
       text size: 14
       top: 290
-    - Alpha: 1
-      Buffer Length: 1
-      Class: rviz/Path
-      Color: 25; 255; 0
-      Enabled: true
-      Head Diameter: 0.30000001192092896
-      Head Length: 0.20000000298023224
-      Length: 0.30000001192092896
-      Line Style: Billboards
-      Line Width: 0.10000000149011612
-      Name: Path
-      Offset:
-        X: 0
-        Y: 0
-        Z: 0
-      Pose Color: 255; 85; 255
-      Pose Style: Arrows
-      Radius: 0.029999999329447746
-      Shaft Diameter: 0.10000000149011612
-      Shaft Length: 0.10000000149011612
-      Topic: /waypoint/path
-      Unreliable: false
-      Value: true
     - Class: rviz/MarkerArray
       Enabled: true
       Marker Topic: /waypoint/marker
@@ -450,7 +469,7 @@ Visualization Manager:
       Marker Topic: /safety_limit/next_robot_position
       Name: Marker
       Namespaces:
-        next_robot_position: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -503,6 +522,69 @@ Visualization Manager:
       text size: 12
       top: 0
       width: 100
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        base_foot_point:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        camera_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        front_lrf_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        imu_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        left_wheel_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        rear_lrf_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        right_wheel_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        velodyne:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        velodyne_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+      Name: RobotModel
+      Robot Description: robot_description
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -531,7 +613,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 12.465319633483887
+      Distance: 32.44379425048828
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -546,10 +628,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.359796404838562
+      Pitch: 1.0347968339920044
       Target Frame: base_link
       Value: Orbit (rviz)
-      Yaw: 2.4222099781036377
+      Yaw: 3.2072103023529053
     Saved: ~
 Window Geometry:
   Displays:

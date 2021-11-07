@@ -1,0 +1,38 @@
+<launch>
+
+   <arg name="map_file" default="$(find kcctcore)/config/map/sim1.yaml" />
+
+
+
+	<node respawn="true" name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)">
+		<remap from="/map" to="/map" />
+	</node>
+	
+	<node name="amcl" pkg="amcl" type="amcl">
+		<remap from="/scan" to="/scan" />	
+		<!--<param name="odom_alpha1" type="double" value="7" />
+		<param name="odom_alpha2" type="double" value="7" />
+		<param name="odom_alpha3" type="double" value="3.5" />
+		<param name="odom_alpha4" type="double" value="3.5" />-->
+		
+		<param name="odom_alpha1" type="double" value="10" />
+		<param name="odom_alpha2" type="double" value="7" />
+		<param name="odom_alpha3" type="double" value="3.5" />
+		<param name="odom_alpha4" type="double" value="2.4" />
+		
+		
+		<!--ＮＥＣで良かったパラメータ-->
+		<!--<param name="odom_alpha1" type="double" value="17" />
+		<param name="odom_alpha2" type="double" value="15" />
+		<param name="odom_alpha3" type="double" value="8.5" />
+		<param name="odom_alpha4" type="double" value="6.4" />
+		-->
+		<param name="laser_max_beams" type="int" value="150" />
+		<param name="min_particles" type="int" value="300" />
+		<param name="max_particles" type="int" value="1000" />
+		<param name="update_min_d" type="double" value="0.05" />
+		<param name="update_min_a" type="double" value="0.08" />
+		<param name="use_map_topic" type="bool" value="false" />
+	</node>
+
+</launch>

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="waypoint_record" default="false" />
+    <arg name="bag_file" default="/home/share/rosbag/2021-10-24-06-32-04.bag" />
+    <arg name="map_pcd" value="$(find kcctcore)/config/pcd/naka211023.pcd" />
+
+    <param name="/use_sim_time" value="true" />
+    <group if="$(arg waypoint_record)">
+        <node name="initial3d" pkg="kcctplugin" type="3d_initial_pose" output="screen"/>
+        <include file="$(find waypoint_tools)/launch/waypoint_record.launch"/>
+    </group>
+    
+    <node pkg="tf" type="static_transform_publisher" name="stp_laser_vel2" args="0 0 0.8 0.0 0 0 base_link velodyne_link 100" />
+    
+    <node name="teensy_handler" pkg="kcctcore" type="teensy_handler" output="screen" />
+    <include file="$(find kcctcore)/launch/test/hdl_localization.launch">
+        <arg name="map_pcd" value="$(arg map_pcd)" />
+    </include>
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find hdl_localization)/rviz/hdl_localization.rviz" />
+    <node pkg="kcctcore" type="launch_delayed.sh" args="0 rosbag play $(arg bag_file) -r 1.0 --clock --topic /velodyne_points /float_sensor_data /initialpose" name="launch_delayed1" output="screen" />
+</launch>

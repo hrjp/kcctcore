@@ -1,9 +1,9 @@
 <launch>
-	<arg name="sim" default="false" />
+	<arg name="sim" default="true" />
     <arg name="map_2d" default="false" />
     <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/wpdata_kcct_g10.csv"/>
     <arg name="world_name" default="$(find kcctsim)/worlds/autoware.world"/>
-    <arg name="map_pcd" value="$(find kcctcore)/config/pcd/kcct_g10.pcd" />
+    <arg name="map_pcd" value="$(find kcctcore)/config/pcd/autoware.pcd" />
     <arg name="map_2d_file" default="$(find kcctcore)/config/map/sim1.yaml" />
 
 

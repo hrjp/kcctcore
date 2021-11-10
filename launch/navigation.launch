@@ -1,9 +1,9 @@
 <launch>
-	<arg name="sim" default="true" />
+	<arg name="sim" default="false" />
     <arg name="map_2d" default="false" />
-    <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/wpdata.csv"/>
+    <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/wpdata_kcct_g10.csv"/>
     <arg name="world_name" default="$(find kcctsim)/worlds/autoware.world"/>
-    <arg name="map_pcd" value="$(find kcctcore)/config/pcd/autoware_world.pcd" />
+    <arg name="map_pcd" value="$(find kcctcore)/config/pcd/kcct_g10.pcd" />
     <arg name="map_2d_file" default="$(find kcctcore)/config/map/sim1.yaml" />
 
 
@@ -28,6 +28,9 @@
     </group>
     <group unless="$(arg map_2d)">
         <node pkg="kcctcore" type="launch_delayed.sh" args="2 roslaunch kcctcore mcl_3dl.launch map_pcd:=$(arg map_pcd)" name="launch_delayed2" output="screen" />
+        <!--<include file="$(find kcctcore)/launch/test/hdl_localization.launch">
+            <arg name="map_pcd" value="$(arg map_pcd)" />
+        </include>-->
     </group>
 
 

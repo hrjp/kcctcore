@@ -1,11 +1,11 @@
 <launch>
-	<arg name="sim" default="true" />
+	<arg name="sim" default="false" />
     <arg name="map_2d" default="false" />
-    <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/wpdata_kcct_g10.csv"/>
+    <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/kcct_g10.csv"/>
     <arg name="world_name" default="$(find kcctsim)/worlds/autoware.world"/>
-    <arg name="map_pcd" value="$(find kcctcore)/config/pcd/autoware.pcd" />
+    <arg name="map_pcd" value="$(find kcctcore)/config/pcd/kcct_g10.pcd" />
     <arg name="map_2d_file" default="$(find kcctcore)/config/map/sim1.yaml" />
-
+    <arg name="use_hdl_localization" default="true" />
 
 
     <group if="$(arg sim)">
@@ -16,7 +16,16 @@
         </include>
     </group>
     <group unless="$(arg sim)">
-        <include file="$(find kcctcore)/launch/include/sensor.launch"/>
+        <group if="$(arg use_hdl_localization)">
+            <include file="$(find kcctcore)/launch/include/sensor.launch">
+                <arg name="tf_publish" default="false" />
+            </include>
+        </group>
+        <group unless="$(arg use_hdl_localization)">
+            <include file="$(find kcctcore)/launch/include/sensor.launch">
+                <arg name="tf_publish" default="true" />
+            </include>
+        </group>
     </group>
 
     <group if="$(arg map_2d)">
@@ -27,10 +36,14 @@
         <node pkg="rviz" type="rviz" name="rviz" args="-d $(find kcctcore)/config/rviz/navigation2dA.rviz" />
     </group>
     <group unless="$(arg map_2d)">
-        <node pkg="kcctcore" type="launch_delayed.sh" args="2 roslaunch kcctcore mcl_3dl.launch map_pcd:=$(arg map_pcd)" name="launch_delayed2" output="screen" />
-        <!--<include file="$(find kcctcore)/launch/test/hdl_localization.launch">
+        <group if="$(arg use_hdl_localization)">
+            <include file="$(find kcctcore)/launch/test/hdl_localization.launch">
             <arg name="map_pcd" value="$(arg map_pcd)" />
-        </include>-->
+            </include>
+        </group>
+        <group unless="$(arg use_hdl_localization)">
+            <node pkg="kcctcore" type="launch_delayed.sh" args="2 roslaunch kcctcore mcl_3dl.launch map_pcd:=$(arg map_pcd)" name="launch_delayed2" output="screen" />
+        </group>
     </group>
 
 

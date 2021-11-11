@@ -1,4 +1,5 @@
 <launch>
+<arg name="tf_publish" default="true" />
 <!--<node pkg="tf" type="static_transform_publisher" name="imu_transform" args="0 0 0 -1.570796 0 3.14159265 base_link imu_link 100"/>-->
 <node pkg="tf" type="static_transform_publisher" name="imu_transform" args="0 0 0 0 0 0 base_link imu_link 100"/>
 <node name="serial_node"        pkg="rosserial_python"      type="serial_node.py">
@@ -9,6 +10,8 @@
 	<include file="$(find kcctcore)/launch/sensor/hokuyo/hokuyo_urg_single.launch"/>
 	<include file="$(find kcctcore)/launch/sensor/velodyne/velodyne.launch"/>
 	<node pkg="kcctcore" type="robot_model_node" name="robot_model_node" output="screen"/>
- <node name="teensy_handler" pkg="kcctcore" type="teensy_handler"/>
+	<node name="teensy_handler" pkg="kcctcore" type="teensy_handler">
+		<param name="tf_publish" value="$(arg tf_publish)" />
+	</node>
  <!--<include file="$(find kcctcore)/launch/sensor/ublox/gnss.launch"/>-->
 </launch>

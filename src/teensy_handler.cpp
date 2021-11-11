@@ -18,6 +18,7 @@ using namespace std;
 vector<int32_t> int_sensor_data(30);
 vector<float> float_sensor_data(30);
 std_msgs::Float32 linear_vel;
+bool tf_publish=true;
 
 void int_sensor_data_callback(const std_msgs::Int32MultiArray& int_sensor_data_row){ 
      int_sensor_data=int_sensor_data_row.data;
@@ -60,8 +61,10 @@ void float_sensor_data_callback(const std_msgs::Float32MultiArray& float_sensor_
      transformStamped.transform.rotation.y = float_sensor_data[9];
      transformStamped.transform.rotation.z = float_sensor_data[11];
      transformStamped.transform.rotation.w = float_sensor_data[12];
-   
-     br.sendTransform(transformStamped);
+     if(tf_publish){
+          br.sendTransform(transformStamped);
+     }
+
      //std::cout<<transformStamped.child_frame_id<<std::endl;
 }
 
@@ -78,6 +81,10 @@ int main(int argc, char **argv){
      ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 10); 
      ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>("imu/data", 10);
      ros::Publisher mag_pub = n.advertise<sensor_msgs::MagneticField>("imu/mag", 10); 
+
+     //param setting
+     ros::NodeHandle pn("~");
+     pn.param<bool>("tf_publish", tf_publish, true);
      
      while (n.ok())  {
 /*

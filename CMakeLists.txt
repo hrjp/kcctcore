@@ -156,6 +156,7 @@ include_directories(
 #############
 set(HEADERS include/kcctcore/button_status.h)
 set(HEADERS include/kcctcore/waypoint_type.h)
+set(HEADERS include/kcctcore/TFtoPose.h)
 
 
 add_executable(navigation_master src/navigation_master)
@@ -166,6 +167,9 @@ target_link_libraries(robot_model_node ${catkin_LIBRARIES})
 
 add_executable(teensy_handler src/teensy_handler.cpp)
 target_link_libraries(teensy_handler ${catkin_LIBRARIES})
+
+add_executable(floor_tf_broadcaster src/floor_tf_broadcaster.cpp)
+target_link_libraries(floor_tf_broadcaster ${catkin_LIBRARIES})
 
 # all install targets should use catkin DESTINATION variables
 # See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html

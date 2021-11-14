@@ -30,4 +30,4 @@ my_costmap:
   inflation_layer:
     inflation_radius: 1.3
   path_costmap:
-    cost_path_width: 30.0
+    cost_path_width: 10.0

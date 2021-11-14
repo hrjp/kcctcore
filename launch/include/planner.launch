@@ -11,7 +11,7 @@
         <param name="map_frame_id" value="map"/>
         <param name="maxVelocity" value="0.7"/>
         <param name="loop_rate" value="20"/>
-        <param name="target_deviation" value="1.5"/>
+        <param name="target_deviation" value="4.0"/>
         <param name="final_target_deviation" value="0.4"/>
         <remap from="path" to="waypoint/path"/>
         <remap from="successPlan" to="astar_planning_node/successPlan"/>

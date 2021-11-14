@@ -6,7 +6,7 @@
     <arg name="map_pcd" default="$(find kcctcore)/config/pcd/autoware_world.pcd" />
     <arg name="map_2d_file" default="$(find kcctcore)/config/map/sim1.yaml" />
     <arg name="use_hdl_localization" default="true" />
-    <arg name="waypoint_marking" default="true"/>
+    <arg name="waypoint_marking" default="false"/>
 
     <include file="$(find kcctcore)/launch/include/localization.launch">
         <arg name="sim" default="$(arg sim)" />

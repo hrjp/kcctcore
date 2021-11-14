@@ -1,6 +1,6 @@
 <launch>
 
-    <node pkg="eg_mixed" type="costmap_node" name="costmap_node" respawn="true" >
+    <node pkg="kcctnavigation" type="costmap_node" name="costmap_node" respawn="true" >
         <rosparam command="load" file="$(find kcctcore)/config/nav_param/local_costmap_params.yaml" />
     </node>
 

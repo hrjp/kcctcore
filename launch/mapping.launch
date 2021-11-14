@@ -16,7 +16,6 @@
 	    </node>
         <node name="teensy_handler" pkg="kcctcore" type="teensy_handler"/>
         <include file="$(find kcctcore)/launch/sensor/velodyne/pc2scan.launch"/>
-        <node pkg="rviz" type="rviz" name="rviz" args="-d $(find kcctcore)/config/rviz/waypoint2d.rviz" />
         <node pkg="kcctcore" type="launch_delayed.sh" args="0 rosbag play $(arg bag_file) -r $(arg playback_speed) --clock --topic /velodyne_points /float_sensor_data" name="launch_delayed1" output="screen" />
     </group>
     <group unless="$(arg map_2d)">

@@ -73,5 +73,4 @@
 
     <node pkg="hdl_localization" type="plot_status.py" name="plot_estimation_errors" if="$(arg plot_estimation_errors)" />
 
-    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find kcctcore)/config/rviz/3d_navigation.rviz" respawn="true" />
 </launch>

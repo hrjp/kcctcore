@@ -1,52 +1,6 @@
 <launch>
-	<arg name="sim" default="true" />
-    <arg name="map_2d" default="false" />
-    <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/kcct_g10.csv"/>
-    <arg name="world_name" default="$(find kcctsim)/worlds/autoware.world"/>
-    <arg name="map_pcd" value="$(find kcctcore)/config/pcd/autoware_world.pcd" />
-    <arg name="map_2d_file" default="$(find kcctcore)/config/map/sim1.yaml" />
-    <arg name="use_hdl_localization" default="true" />
-
-
-    <group if="$(arg sim)">
-        <include file="$(find kcctcore)/launch/include/sensorsim.launch"/>
-        <include file="$(find kcctsim)/launch/sim.launch">
-            <arg name="gui" default="true"/>
-            <arg name="world_name" default="$(arg world_name)"/>
-        </include>
-    </group>
-    <group unless="$(arg sim)">
-        <group if="$(arg use_hdl_localization)">
-            <include file="$(find kcctcore)/launch/include/sensor.launch">
-                <arg name="tf_publish" default="false" />
-            </include>
-        </group>
-        <group unless="$(arg use_hdl_localization)">
-            <include file="$(find kcctcore)/launch/include/sensor.launch">
-                <arg name="tf_publish" default="true" />
-            </include>
-        </group>
-    </group>
-
-    <group if="$(arg map_2d)">
-        <node pkg="tf" type="static_transform_publisher" name="stp_laser" args="0 0 0 0.0 0 0 map floor 100" />
-        <include file="$(find kcctcore)/launch/include/amcl.launch">
-            <arg name="map_file" default="$(arg map_2d_file)"/>
-        </include>
-        <node pkg="rviz" type="rviz" name="rviz" args="-d $(find kcctcore)/config/rviz/navigation2dA.rviz" />
-    </group>
-    <group unless="$(arg map_2d)">
-        <group if="$(arg use_hdl_localization)">
-            <include file="$(find kcctcore)/launch/test/hdl_localization.launch">
-            <arg name="map_pcd" value="$(arg map_pcd)" />
-            </include>
-        </group>
-        <group unless="$(arg use_hdl_localization)">
-            <node pkg="kcctcore" type="launch_delayed.sh" args="2 roslaunch kcctcore mcl_3dl.launch map_pcd:=$(arg map_pcd)" name="launch_delayed2" output="screen" />
-        </group>
-    </group>
-
-    
+    <arg name="waypoint_file" default=""/>
+    <include file="$(find kcctcore)/launch/include/costmap.launch"/>
     <include file="$(find kcctnavigation)/launch/pcl_handler.launch"/>
     <include file="$(find waypoint_tools)/launch/path_display.launch">
         <arg name="wayFile" value="$(arg waypoint_file)"/>
@@ -63,14 +17,10 @@
         <remap from="successPlan" to="astar_planning_node/successPlan"/>
     </node>
 
-    <node pkg="kcctnavigation" type="costmap_node" name="costmap_node" respawn="true" >
-        <rosparam command="load" file="$(find kcctcore)/config/nav_param/local_costmap_params.yaml" />
-    </node>
-
-    <node name="astar_planning_node" pkg="eg_planner" type="astar_planning_node" respawn="true" output="screen">
+   <node name="astar_planning_node" pkg="eg_planner" type="astar_planning_node" respawn="true" output="screen">
         <rosparam file="$(find kcctcore)/config/nav_param/astar_planning.yaml" command="load" />
         <remap from="astar_plannnig_node/goal" to="nowWpPose"/>
-        <remap from="astar_plannnig_node/costmap" to="costmap_node/my_costmap/costmap"/>
+        <remap from="astar_plannnig_node/costmap" to="costmap_node/marged_costmap"/>
     </node>
 
     <node name="lane_planner" pkg="kcctnavigation" type="lane_planner" >
@@ -112,12 +62,6 @@
         <remap from="path" to="waypoint/path"/>
     </node>
 
-    <node name="person_tracking" pkg="kcctnavigation" type="person_tracking" output="screen"/>
-
-    <node name="path_costmap" pkg="kcctnavigation" type="path_costmap" output="screen">
-        
-    </node>
-
     <!--MASTER NODE-->
     <node name="navigation_master" pkg="kcctcore" type="navigation_master" respawn="true" output="screen">
         <param name="base_link_frame_id" value="base_link"/>
@@ -128,6 +72,4 @@
         <remap from="recovery/cmd_vel" to="wpBack_recovery/cmd_vel"/>
         <remap from="recovery/mode" to="wpBack_recovery/mode"/>
     </node>
-    <!--<include file="$(find imageProcessor)/launch/colorTracking.launch"/>-->
-    <node name="initial3d" pkg="kcctplugin" type="3d_initial_pose" output="screen"/>
 </launch>

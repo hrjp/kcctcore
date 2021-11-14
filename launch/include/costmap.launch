@@ -1,0 +1,17 @@
+<launch>
+
+    <node pkg="eg_mixed" type="costmap_node" name="costmap_node" respawn="true" >
+        <rosparam command="load" file="$(find kcctcore)/config/nav_param/local_costmap_params.yaml" />
+    </node>
+
+    <node name="path_costmap" pkg="kcctnavigation" type="path_costmap" output="screen">
+        <rosparam command="load" file="$(find kcctcore)/config/nav_param/local_costmap_params.yaml" />
+    </node>
+
+    <node name="costmap_marger" pkg="kcctnavigation" type="costmap_marger" output="screen">
+        <remap from="/costmap_node/base_costmap" to="/costmap_node/path_costmap" />
+        <remap from="/costmap_node/sub_costmap" to="/costmap_node/my_costmap/costmap" />
+        <remap from="/costmap_node/marged_costmap" to="/costmap_node/marged_costmap" />
+    </node>
+
+</launch>

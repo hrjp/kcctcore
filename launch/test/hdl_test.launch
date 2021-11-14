@@ -5,6 +5,7 @@
     <arg name="map_pcd" default="$(find kcctcore)/config/pcd/kcct_g10.pcd" />-->
     <arg name="bag_file" default="/home/share/rosbag/naka211023.bag" />
     <arg name="map_pcd" default="$(find kcctcore)/config/pcd/naka211023.pcd" />
+    <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/naka211023.csv"/>
 
     <param name="/use_sim_time" value="true" />
     <group if="$(arg waypoint_record)">
@@ -22,8 +23,10 @@
     <include file="$(find kcctcore)/launch/test/hdl_localization.launch">
         <arg name="map_pcd" value="$(arg map_pcd)" />
     </include>
-        <node pkg="kcctnavigation" type="costmap_node" name="costmap_node" respawn="true" >
-        <rosparam command="load" file="$(find kcctcore)/config/nav_param/local_costmap_params.yaml" />
-    </node>
-    <node pkg="kcctcore" type="launch_delayed.sh" args="0 rosbag play $(arg bag_file) -r 1.0 --clock --topic /velodyne_points /float_sensor_data /initialpose" name="launch_delayed1" output="screen" />
+    
+    <include file="$(find kcctcore)/launch/include/planner.launch">
+        <arg name="waypoint_file" default="$(arg waypoint_file)"/>
+    </include>
+
+    <node pkg="kcctcore" type="launch_delayed.sh" args="0 rosbag play $(arg bag_file) -r 2.0 --clock --topic /velodyne_points /float_sensor_data /initialpose" name="launch_delayed1" output="screen" />
 </launch>

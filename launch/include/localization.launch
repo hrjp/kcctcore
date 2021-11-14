@@ -9,7 +9,9 @@
 
 
     <group if="$(arg sim)">
-        <include file="$(find kcctcore)/launch/include/sensorsim.launch"/>
+        <include file="$(find kcctcore)/launch/include/sensor.launch">
+            <arg name="sim" default="$(arg sim)" />
+        </include>
         <include file="$(find kcctsim)/launch/sim.launch">
             <arg name="gui" default="true"/>
             <arg name="world_name" default="$(arg world_name)"/>
@@ -19,11 +21,13 @@
         <group if="$(arg use_hdl_localization)">
             <include file="$(find kcctcore)/launch/include/sensor.launch">
                 <arg name="tf_publish" default="false" />
+                <arg name="sim" default="$(arg sim)" />
             </include>
         </group>
         <group unless="$(arg use_hdl_localization)">
             <include file="$(find kcctcore)/launch/include/sensor.launch">
                 <arg name="tf_publish" default="true" />
+                <arg name="sim" default="$(arg sim)" />
             </include>
         </group>
     </group>

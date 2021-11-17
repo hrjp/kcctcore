@@ -1,3 +1,6 @@
+![license](https://img.shields.io/github/license/hrjp/kcctcore)
+![size](https://img.shields.io/github/repo-size/hrjp/kcctcore)
+![commit](https://img.shields.io/github/last-commit/hrjp/kcctcore/main)
 # kcctcore
 Kobe Kosen RoboticsのNavigationパッケージをつなぐマスターパッケージ
 

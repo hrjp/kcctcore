@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="waypoint_record" default="false" />
-    <arg name="bag_file" default="/home/share/rosbag/kcct_g10.bag" />
-    <arg name="map_pcd" value="$(find kcctcore)/config/pcd/kcct_g10.pcd" />
+    <arg name="waypoint_marking" default="false" />
+    <arg name="bag_file" default="/home/share/rosbag/ougi210313.bag" />
+    <arg name="map_pcd" value="$(find kcctcore)/config/pcd/ougi210313.pcd" />
 
     <param name="/use_sim_time" value="true" />
     <node pkg="tf" type="static_transform_publisher" name="stp_laser" args="0 0 0.8 0.0 0 0 base_link camera_link 100" />
@@ -14,10 +14,16 @@
     </node>
     <node pkg="kcctcore" type="robot_model_node" name="robot_model_node" output="screen"/>
     
-    <group if="$(arg waypoint_record)">
+    <group if="$(arg waypoint_marking)">
         <node name="initial3d" pkg="kcctplugin" type="3d_initial_pose" output="screen"/>
         <include file="$(find waypoint_tools)/launch/waypoint_record.launch"/>
     </group>
+
+    <include file="$(find kcctcore)/launch/include/rviz.launch">
+        <arg name="map_2d" default="false" />
+        <arg name="waypoint_marking" default="$(arg waypoint_marking)" />
+    </include>
+
     <node pkg="kcctcore" type="launch_delayed.sh" args="0 rosbag play $(arg bag_file) -r 1.0 --clock --topic /velodyne_points /float_sensor_data /initialpose" name="launch_delayed1" output="screen" />
     <node pkg="kcctcore" type="launch_delayed.sh" args="3 roslaunch kcctcore mcl_3dl.launch map_pcd:=$(arg map_pcd)" name="launch_delayed2" output="screen" />
 </launch>

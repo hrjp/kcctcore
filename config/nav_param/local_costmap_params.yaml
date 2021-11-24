@@ -15,20 +15,24 @@ my_costmap:
 
   obstacle_layer:
     observation_sources: laser_scan_sensor
+    clearing: true
     laser_scan_sensor:
       sensor_frame: camera_link
       topic: scan
       data_type: LaserScan
-      obstacle_range: 10.0
-      raytrace_range: 10.0
-
+      marking: true
+      clearing: true
       #sensor_frame: velodyne_link
       #topic: velodyne_points
       #data_type: PointCloud2
       #min_obstacle_height: 0.2
       
-      marking: true
-      clearing: true
+      inf_is_valid: true #false
+    #combination_method: 0 #1
+    obstacle_range: 10.0
+    raytrace_range: 12.0
+    
+
   inflation_layer:
     inflation_radius: 1.3
   path_costmap:

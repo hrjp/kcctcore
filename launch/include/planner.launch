@@ -9,7 +9,7 @@
     <node name="wp_select" pkg="waypoint_tools" type="wp_select">
         <param name="base_link_frame_id" value="base_link"/>
         <param name="map_frame_id" value="map"/>
-        <param name="maxVelocity" value="0.7"/>
+        <param name="maxVelocity" value="1.2"/>
         <param name="loop_rate" value="20"/>
         <param name="target_deviation" value="4.0"/>
         <param name="final_target_deviation" value="0.4"/>

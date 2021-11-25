@@ -26,7 +26,7 @@ int main(int argc, char **argv){
      ros::Rate loop_rate(10);
      body_model body;
      while (n.ok())  {
-          body.update("/base_link");
+          body.update();
 
 
 

@@ -5,7 +5,7 @@
  	<remap from="/scan" to="/scan" />	
     	<param name="ip_address" value="192.168.1.10"/>
    	<param name="frame_id" value="2d_blue"/>
-   	<param name="calibrate_time" value="true"/>
+   	<param name="calibrate_time" value="false"/>
    	<param name="publish_intensity" value="false"/>
    	<param name="publish_multiecho" value="false"/>
    	<param name="angle_min" value="-1.5707963"/>

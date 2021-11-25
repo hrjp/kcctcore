@@ -27,7 +27,7 @@
 			
 			<include file="$(find kcctcore)/launch/sensor/hokuyo/hokuyo_urg_single.launch"/>
 			<include file="$(find kcctcore)/launch/sensor/velodyne/velodyne.launch"/>
-			<node pkg="kcctcore" type="robot_model_node" name="robot_model_node" output="screen"/>
+			<node pkg="kcctcore" type="robot_model_node" name="robot_model_node" />
 			<node name="teensy_handler" pkg="kcctcore" type="teensy_handler">
 				<param name="tf_publish" value="$(arg tf_publish)" />
 			</node>

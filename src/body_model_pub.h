@@ -12,7 +12,7 @@ using namespace std;
 class body_model{
     public:
     body_model();
-    void update(char *fix_id);
+    void update();
     private:
     ros::NodeHandle n;
     ros::Publisher marker_pub;
@@ -24,18 +24,18 @@ body_model::body_model(){
     marker_pub   = n.advertise<visualization_msgs::MarkerArray>("body_model", 1);
 }
 
-void body_model::update(char *fix_id){
+void body_model::update(){
     visualization_msgs::MarkerArray marker_array;
 
-    marker_array.markers.resize(10);
+    marker_array.markers.resize(5);
         //marker0
     int i=0;
-    marker_array.markers[i].header.frame_id = fix_id;
+    marker_array.markers[i].header.frame_id = "base_link";
     marker_array.markers[i].header.stamp = ros::Time::now();
     marker_array.markers[i].ns = "cmd_vel_display";
     marker_array.markers[i].id = i;
     marker_array.markers[i].lifetime = ros::Duration();
-
+    
     marker_array.markers[i].type = visualization_msgs::Marker::CUBE;
     marker_array.markers[i].action = visualization_msgs::Marker::ADD;
     marker_array.markers[i].scale.x = 0.85;
@@ -47,15 +47,15 @@ void body_model::update(char *fix_id){
     marker_array.markers[i].pose.orientation.x=0;
     marker_array.markers[i].pose.orientation.y=0;
     marker_array.markers[i].pose.orientation.z=0;
-    marker_array.markers[i].pose.orientation.w=0;
+    marker_array.markers[i].pose.orientation.w=1.0;
     marker_array.markers[i].color.r = 0.8f;
     marker_array.markers[i].color.g = 0.8f;
     marker_array.markers[i].color.b = 0.8f;
     marker_array.markers[i].color.a = 0.8f;
 
 
-    i=2;
-    marker_array.markers[i].header.frame_id = fix_id;
+    i=1;
+    marker_array.markers[i].header.frame_id = "base_link";
     marker_array.markers[i].header.stamp = ros::Time::now();
     marker_array.markers[i].ns = "cmd_vel_display";
     marker_array.markers[i].id = i;
@@ -72,14 +72,14 @@ void body_model::update(char *fix_id){
     marker_array.markers[i].pose.orientation.x=0;
     marker_array.markers[i].pose.orientation.y=0;
     marker_array.markers[i].pose.orientation.z=0;
-    marker_array.markers[i].pose.orientation.w=0;
+    marker_array.markers[i].pose.orientation.w=1.0;
     marker_array.markers[i].color.r = 0.8f;
     marker_array.markers[i].color.g = 0.8f;
     marker_array.markers[i].color.b = 0.8f;
     marker_array.markers[i].color.a = 0.8f;
 
-     i=3;
-    marker_array.markers[i].header.frame_id = fix_id;
+     i=2;
+    marker_array.markers[i].header.frame_id = "base_link";
     marker_array.markers[i].header.stamp = ros::Time::now();
     marker_array.markers[i].ns = "cmd_vel_display";
     marker_array.markers[i].id = i;
@@ -102,8 +102,8 @@ void body_model::update(char *fix_id){
     marker_array.markers[i].color.b = 0.2f;
     marker_array.markers[i].color.a = 0.9f;
 
-    i=4;
-    marker_array.markers[i].header.frame_id = fix_id;
+    i=3;
+    marker_array.markers[i].header.frame_id = "base_link";
     marker_array.markers[i].header.stamp = ros::Time::now();
     marker_array.markers[i].ns = "cmd_vel_display";
     marker_array.markers[i].id = i;
@@ -126,8 +126,8 @@ void body_model::update(char *fix_id){
     marker_array.markers[i].color.b = 0.2f;
     marker_array.markers[i].color.a = 0.9f;
 
-    i=5;
-    marker_array.markers[i].header.frame_id = fix_id;
+    i=4;
+    marker_array.markers[i].header.frame_id = "base_link";
     marker_array.markers[i].header.stamp = ros::Time::now();
     marker_array.markers[i].ns = "cmd_vel_display";
     marker_array.markers[i].id = i;

@@ -3,8 +3,8 @@
     <arg name="waypoint_record" default="false" />
     <!--<arg name="bag_file" default="/home/share/rosbag/kcct_g10.bag" />
     <arg name="map_pcd" default="$(find kcctcore)/config/pcd/kcct_g10.pcd" />-->
-    <arg name="bag_file" default="/home/share/rosbag/ougi210313.bag" />
-    <arg name="map_pcd" default="$(find kcctcore)/config/pcd/ougi210313.pcd" />
+    <arg name="bag_file" default="/home/share/rosbag/2021-10-23-04-16-08.bag" />
+    <arg name="map_pcd" default="$(find kcctcore)/config/pcd/naka211023.pcd" />
     <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/naka211023.csv"/>
 
     <param name="/use_sim_time" value="true" />
@@ -33,5 +33,5 @@
         <arg name="waypoint_marking" default="$(arg waypoint_record)" />
     </include>
 
-    <node pkg="kcctcore" type="launch_delayed.sh" args="0 rosbag play $(arg bag_file) -r 2.0 --clock --topic /velodyne_points /float_sensor_data /initialpose" name="launch_delayed1" output="screen" />
+    <node pkg="kcctcore" type="launch_delayed.sh" args="0 rosbag play $(arg bag_file) -r 1.0 --clock --topic /velodyne_points /float_sensor_data /initialpose /image_raw" name="launch_delayed1" output="screen" />
 </launch>

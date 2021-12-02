@@ -24,6 +24,8 @@
     <include file="$(find kcctcore)/launch/include/hdl_localization.launch">
         <arg name="map_pcd" default="$(arg map_pcd)" />
     </include>
+
+    <include file="$(find kcctcore)/launch/test/hdl_people_tracking.launch" />
     
     <include file="$(find kcctcore)/launch/include/planner.launch">
         <arg name="waypoint_file" default="$(arg waypoint_file)"/>
@@ -34,5 +36,5 @@
         <arg name="waypoint_marking" default="$(arg waypoint_record)" />
     </include>
     
-    <node pkg="kcctcore" type="launch_delayed.sh" args="0 rosbag play $(arg bag_file) -r 1.0 --clock --topic /velodyne_points /float_sensor_data /initialpose /image_raw /scan" name="launch_delayed1" output="screen" />
+    <node pkg="kcctcore" type="launch_delayed.sh" args="0 rosbag play $(arg bag_file) -r 1.0 --clock --topic /velodyne_points /float_sensor_data /initialpose /image_raw /scan" name="rosbag_play" output="screen" />
 </launch>

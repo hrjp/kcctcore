@@ -40,7 +40,7 @@
     </group>
     <group unless="$(arg map_2d)">
         <group if="$(arg use_hdl_localization)">
-            <include file="$(find kcctcore)/launch/test/hdl_localization.launch">
+            <include file="$(find kcctcore)/launch/include/hdl_localization.launch">
             <arg name="map_pcd" value="$(arg map_pcd)" />
             </include>
         </group>

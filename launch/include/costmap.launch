@@ -4,7 +4,7 @@
         <rosparam command="load" file="$(find kcctcore)/config/nav_param/local_costmap_params.yaml" />
     </node>
 
-    <node name="path_costmap" pkg="kcctnavigation" type="path_costmap3" output="screen">
+    <node name="path_costmap" pkg="kcctnavigation" type="path_costmap" output="screen">
         <rosparam command="load" file="$(find kcctcore)/config/nav_param/local_costmap_params.yaml" />
     </node>
 

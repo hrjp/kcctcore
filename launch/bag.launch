@@ -5,14 +5,13 @@
     <arg name="map_pcd" value="$(find kcctcore)/config/pcd/ougi210313.pcd" />
 
     <param name="/use_sim_time" value="true" />
-    <node pkg="tf" type="static_transform_publisher" name="stp_laser" args="0 0 0.8 0.0 0 0 base_link camera_link 100" />
-    <node pkg="tf" type="static_transform_publisher" name="stp_laser_vel" args="0 0 0.8 0.0 0 0 base_link velodyne_link 100" />
+    <include file="$(find kcctcore)/launch/include/robot_model.launch"/>
     
     <node name="teensy_handler" pkg="kcctcore" type="teensy_handler" output="screen" >
       
       <remap from="imu/data" to="imu/data_raw"/>
     </node>
-    <node pkg="kcctcore" type="robot_model_node" name="robot_model_node" output="screen"/>
+    
     
     <group if="$(arg waypoint_marking)">
         <node name="initial3d" pkg="kcctplugin" type="3d_initial_pose" output="screen"/>

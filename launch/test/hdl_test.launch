@@ -3,24 +3,25 @@
     <arg name="waypoint_record" default="false" />
     <!--<arg name="bag_file" default="/home/share/rosbag/kcct_g10.bag" />
     <arg name="map_pcd" default="$(find kcctcore)/config/pcd/kcct_g10.pcd" />-->
-    <arg name="bag_file" default="/home/share/rosbag/2021-10-23-04-16-08.bag" />
-    <arg name="map_pcd" default="$(find kcctcore)/config/pcd/naka211023.pcd" />
-    <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/naka211023.csv"/>
+    <arg name="bag_file" default="/home/share/rosbag/yahataya211127_navigation2.bag" />
+    <arg name="map_pcd" default="$(find kcctcore)/config/pcd/y1.pcd" />
+    <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/y1.csv"/>
 
     <param name="/use_sim_time" value="true" />
     <group if="$(arg waypoint_record)">
         <node name="initial3d" pkg="kcctplugin" type="3d_initial_pose" output="screen"/>
         <include file="$(find waypoint_tools)/launch/waypoint_record.launch"/>
     </group>
+    <include file="$(find kcctcore)/launch/include/robot_model.launch"/>
     
-    <node pkg="tf" type="static_transform_publisher" name="stp_laser_vel2" args="0 0 0.8 0.0 0 0 base_link velodyne_link 100" />
-    <node pkg="tf" type="static_transform_publisher" name="stp_laser_vel" args="0 0 0.8 0.0 0 0 base_link camera_link 100" />
-    <node pkg="tf" type="static_transform_publisher" name="stp_laser_imu" args="0 0 0.0 0.0 0 0 base_link imu_link 100" />
+    
+    
+    
     
     <node name="teensy_handler" pkg="kcctcore" type="teensy_handler">
 		<param name="tf_publish" value="false" />
 	</node>
-    <include file="$(find kcctcore)/launch/test/hdl_localization.launch">
+    <include file="$(find kcctcore)/launch/include/hdl_localization.launch">
         <arg name="map_pcd" default="$(arg map_pcd)" />
     </include>
     
@@ -32,6 +33,6 @@
         <arg name="map_2d" default="false" />
         <arg name="waypoint_marking" default="$(arg waypoint_record)" />
     </include>
-
-    <node pkg="kcctcore" type="launch_delayed.sh" args="0 rosbag play $(arg bag_file) -r 1.0 --clock --topic /velodyne_points /float_sensor_data /initialpose /image_raw" name="launch_delayed1" output="screen" />
+    
+    <node pkg="kcctcore" type="launch_delayed.sh" args="0 rosbag play $(arg bag_file) -r 1.0 --clock --topic /velodyne_points /float_sensor_data /initialpose /image_raw /scan" name="launch_delayed1" output="screen" />
 </launch>

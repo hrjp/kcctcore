@@ -14,8 +14,9 @@
     </group>
     <include file="$(find kcctcore)/launch/include/robot_model.launch"/>
     
-    
-    
+    <node name="colorTracking" pkg="imageProcessor" type="colorTracking" >
+        <remap from="image" to="image_raw"/>
+    </node>
     
     
     <node name="teensy_handler" pkg="kcctcore" type="teensy_handler">

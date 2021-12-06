@@ -87,6 +87,12 @@ void targetPose_callback(const geometry_msgs::Pose& pose_message)
     targetPose = pose_message;
 }
 
+std_msgs::String now_type;
+void now_type_callback(const std_msgs::String& now_type_)
+{
+    now_type=now_type_;
+}
+
 double quat2yaw(geometry_msgs::Quaternion orientation)
 {
     double roll, pitch, yaw;
@@ -146,6 +152,7 @@ int main(int argc, char **argv){
     ros::Subscriber recovery_mode_sub = lSubscriber.subscribe("recovery/mode", 10 , recovery_mode_callback);
     ros::Subscriber targetWpPose_sub = lSubscriber.subscribe("twist_maneger/targetWpPose_in", 50, targetWpPose_callback);
     ros::Subscriber targetPose_sub = lSubscriber.subscribe("twist_maneger/targetPose_in", 10 , targetPose_callback);
+    ros::Subscriber now_type_sub = lSubscriber.subscribe("waypoint/now_type", 10, now_type_callback);
 
     //cmd_vel publisher
     ros::Publisher cmd_pub=n.advertise<geometry_msgs::Twist>("selected_cmd_vel", 1);
@@ -159,7 +166,7 @@ int main(int argc, char **argv){
     zero_vel.linear.x=0.0;
     zero_vel.angular.z=0.0;
     bool pause_mode=true;
-    bool person_mode=false;
+    
     bool run_init = true;
     bool recovery_init = false;
     int wp_stack=0;
@@ -168,7 +175,6 @@ int main(int argc, char **argv){
 
         if(button_clicked==buttons_status_start){
             pause_mode=false;
-            person_mode=false;
             mode.data = robot_status_str(robot_status::run);
 
         }
@@ -177,27 +183,7 @@ int main(int argc, char **argv){
             mode.data = robot_status_str(robot_status::stop);
         }
 
-        //camera
-        if(wp_stack<now_wp){
-            if(wp_type.at(now_wp)==waypoint_type_camera){
-                std::cout<<"camera mode"<<std::endl;
-                person_mode=true;
-                wp_stack=now_wp;
-            }
-            if(wp_type.at(now_wp)==waypoint_type_stop){
-                pause_mode=true;
-                wp_stack=now_wp;
-            }
-        }
-
-
-        if(person_mode){
-            cmd_vel=camera_cmd_vel;
-            std::cout<<"camera_mode"<<std::endl;
-        }
-        else{
-            cmd_vel=mcl_cmd_vel;
-        }
+        cmd_vel=mcl_cmd_vel;
 
         if(run_init){
             //run init mode
@@ -261,6 +247,28 @@ int main(int argc, char **argv){
                 run_init = true;
                 mode.data = robot_status_str(robot_status::run);
             }
+        }
+
+
+        //人検出
+        static bool person_mode=false;
+        static bool person_mode_once=true;
+        if(now_type.data==waypoint_type_str(waypoint_type::person_detection)){
+            if(person_mode_once){
+                person_mode=true;
+                person_mode_once=false;
+            }
+        }
+        else{
+            person_mode_once=true;
+        }
+        if(person_mode){
+            // start buttonで通常走行に復帰
+            if(button_clicked==buttons_status_start){
+                person_mode=false;
+            }
+            cmd_vel.linear.x=0.0;
+            cmd_vel.angular.z=0.1;
         }
 
         cmd_pub.publish(cmd_vel);

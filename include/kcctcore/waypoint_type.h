@@ -1,17 +1,26 @@
-/**
-* @file waypoint_type.cpp
-* @brief waypoint type define
-* @author Shunya Hara
-* @date 2021.3.6
-* @details wp type name tag
-*/
 #pragma once
+#include <string>
 
-enum waypoint_type{
-    waypoint_type_free,//0
-    waypoint_type_lidar,//1
-    waypoint_type_stop,//2
-    waypoint_type_skip,//3
-    waypoint_type_camera//4
+//addition status
+enum class waypoint_type{
+    skip,
+    normal,
+    precision,
+    person_detection
 
 };
+
+std::string waypoint_type_str(waypoint_type status){
+    switch (status){
+        case(waypoint_type::skip):
+            return "skip";
+        case(waypoint_type::normal):
+            return "normal";
+        case(waypoint_type::precision):
+            return "precision";
+        case(waypoint_type::person_detection):
+            return "person_detection";
+        default:
+            return "";
+    }
+}

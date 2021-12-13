@@ -1,7 +1,6 @@
 <launch>
     <arg name="waypoint_file" default=""/>
     <include file="$(find kcctcore)/launch/include/costmap.launch"/>
-    <include file="$(find kcctnavigation)/launch/pcl_handler.launch"/>
     <include file="$(find waypoint_tools)/launch/path_display.launch">
         <arg name="wayFile" value="$(arg waypoint_file)"/>
     </include>
@@ -36,7 +35,7 @@
         <param name="loop_rate" value="30"/>
         <param name="maxVelocity" value="1.2"/>
         <param name="precision_maxVelocity" value="0.5"/>
-        <param name="max_angular_vel" value="0.5"/>
+        <param name="max_angular_vel" value="0.4"/>
         <param name="maxCurvature" value="3"/>
         <remap from="pure_posePursuit/pose_in" to="lane_planner/pose_out"/>
         <remap from="pure_posePursuit/cmd_vel" to="mcl_cmd_vel"/>

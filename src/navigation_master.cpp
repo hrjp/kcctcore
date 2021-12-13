@@ -253,29 +253,47 @@ int main(int argc, char **argv){
         //人検出
         static bool person_mode=false;
         static bool person_mode_once=true;
+        static bool person_angle=false;
         if(now_type.data==waypoint_type_str(waypoint_type::person_detection)){
             if(person_mode_once){
                 person_mode=true;
                 person_mode_once=false;
+                person_angle=true;
             }
         }
         else{
             person_mode_once=true;
+            
         }
         if(person_mode){
             // start buttonで通常走行に復帰
             if(button_clicked==buttons_status_start){
                 person_mode=false;
             }
-            cmd_vel.linear.x=0.0;
-            cmd_vel.angular.z=0.1;
+            //角度を合わせてから追従開始
+            if(person_angle){
+                double dx = targetPose.position.x - nowPosition.getPose().position.x;
+                double dy = targetPose.position.y - nowPosition.getPose().position.y;
+                double targetAngle = atan2(dy, dx);
+                double diffAngle = arrangeAngle(targetAngle - nowPosition.getYaw());
+
+                cmd_vel.linear.x = 0;
+                cmd_vel.angular.z = diffAngle * 1.5;
+                if(abs(diffAngle) < 10*M_PI/180){
+                    person_angle = false;
+                }
+            }
+            else{
+                cmd_vel.linear.x=camera_cmd_vel.linear.x;
+                cmd_vel.angular.z=camera_cmd_vel.angular.z;
+            }
+            
         }
+
+
 
         cmd_pub.publish(cmd_vel);
         mode_pub.publish(mode);
-
-
-
 
         button_clicked=buttons_status_free;
         ros::spinOnce();//subsucriberの割り込み関数はこの段階で実装される

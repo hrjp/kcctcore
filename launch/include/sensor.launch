@@ -33,7 +33,7 @@
 			</node>
 			
 			<node name="uvc_camera_node" pkg="uvc_camera" type="uvc_camera_node" >
-				<remap from="image_raw" to="image"/>
+				<remap from="image_raw" to="image_raw"/>
 				<param name="device" value="/dev/video4" />
 			</node>
 		<!--<include file="$(find kcctcore)/launch/sensor/ublox/gnss.launch"/>-->

@@ -10,6 +10,7 @@
 #include <nav_msgs/Path.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <std_msgs/Int32.h>
+#include <std_msgs/Bool.h>
 #include <std_msgs/Int32MultiArray.h>
 #include <std_msgs/String.h>
 #include <geometry_msgs/Twist.h>
@@ -158,6 +159,8 @@ int main(int argc, char **argv){
     ros::Publisher cmd_pub=n.advertise<geometry_msgs::Twist>("selected_cmd_vel", 1);
     ros::Publisher mode_pub = n.advertise<std_msgs::String>("mode", 10);
 
+    ros::Publisher yolo_pub = n.advertise<std_msgs::Bool>("enable_yolo", 10);
+
     tf_position nowPosition(map_id, base_link_id, looprate);
     mode.data = robot_status_str(robot_status::stop);
 
@@ -254,6 +257,7 @@ int main(int argc, char **argv){
         static bool person_mode=false;
         static bool person_mode_once=true;
         static bool person_angle=false;
+        static bool enable_yolo=false;
         if(now_type.data==waypoint_type_str(waypoint_type::person_detection)){
             if(person_mode_once){
                 person_mode=true;
@@ -269,9 +273,10 @@ int main(int argc, char **argv){
             // start buttonで通常走行に復帰
             if(button_clicked==buttons_status_start){
                 person_mode=false;
+                enable_yolo=false;
             }
             //角度を合わせてから追従開始
-            if(person_angle){
+            else if(person_angle){
                 double dx = targetPose.position.x - nowPosition.getPose().position.x;
                 double dy = targetPose.position.y - nowPosition.getPose().position.y;
                 double targetAngle = atan2(dy, dx);
@@ -286,11 +291,14 @@ int main(int argc, char **argv){
             else{
                 cmd_vel.linear.x=camera_cmd_vel.linear.x;
                 cmd_vel.angular.z=camera_cmd_vel.angular.z;
+                enable_yolo=true;
             }
             
         }
 
-
+        std_msgs::Bool enable_yolo_msg;
+        enable_yolo_msg.data=enable_yolo;
+        yolo_pub.publish(enable_yolo_msg);
 
         cmd_pub.publish(cmd_vel);
         mode_pub.publish(mode);

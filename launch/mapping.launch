@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
     <arg name="map_2d" default="false" />
-    <arg name="bag_file" default="/home/share/rosbag/y1.bag" />
+    <arg name="bag_file" default="/home/share/rosbag/y2.bag" />
     <arg name="playback_speed" default="2.0" />
 
     <param name="/use_sim_time" value="true" />

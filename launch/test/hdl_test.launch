@@ -3,9 +3,9 @@
     <arg name="waypoint_record" default="false" />
     <!--<arg name="bag_file" default="/home/share/rosbag/kcct_g10.bag" />
     <arg name="map_pcd" default="$(find kcctcore)/config/pcd/kcct_g10.pcd" />-->
-    <arg name="bag_file" default="/home/share/rosbag/yahataya211127_navigation2.bag" />
-    <arg name="map_pcd" default="$(find kcctcore)/config/pcd/y1.pcd" />
-    <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/y1.csv"/>
+    <arg name="bag_file" default="/home/share/rosbag/2021-12-19-02-01-36.bag" />
+    <arg name="map_pcd" default="$(find kcctcore)/config/pcd/y2.pcd" />
+    <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/y2.csv"/>
 
     <param name="/use_sim_time" value="true" />
     <group if="$(arg waypoint_record)">
@@ -37,5 +37,5 @@
         <arg name="waypoint_marking" default="$(arg waypoint_record)" />
     </include>
     
-    <node pkg="kcctcore" type="launch_delayed.sh" args="0 rosbag play $(arg bag_file) -r 1.0 --clock --topic /velodyne_points /float_sensor_data /initialpose /image_raw /scan" name="rosbag_play" output="screen" />
+    <node pkg="kcctcore" type="launch_delayed.sh" args="0 rosbag play $(arg bag_file) -r 1.0 --clock --topic /velodyne_points /yolo_image /float_sensor_data /initialpose /image_raw /scan" name="rosbag_play" output="screen" />
 </launch>

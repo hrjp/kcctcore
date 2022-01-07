@@ -16,7 +16,7 @@
         <remap from="successPlan" to="astar_planning_node/successPlan"/>
     </node>
 
-   <node name="astar_planning_node" pkg="kcctnavigation" type="astar_planning_node" respawn="true" output="screen">
+   <node name="astar_planning_node" pkg="kcctnavigation" type="astar_planning_node" respawn="true">
         <rosparam file="$(find kcctcore)/config/nav_param/astar_planning.yaml" command="load" />
         <remap from="astar_plannnig_node/goal" to="nowWpPose"/>
         <remap from="astar_plannnig_node/costmap" to="costmap_node/marged_costmap"/>

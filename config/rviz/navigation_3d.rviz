@@ -233,6 +233,8 @@ Visualization Manager:
           Value: true
         map:
           Value: true
+        odom_link2:
+          Value: true
         rear_lrf_link:
           Value: true
         right_wheel_link:
@@ -269,6 +271,8 @@ Visualization Manager:
               velodyne_link:
                 {}
           floor:
+            {}
+          odom_link2:
             {}
       Update Interval: 0
       Value: true
@@ -430,14 +434,6 @@ Visualization Manager:
       Topic: /initialpose_candidate
       Unreliable: false
       Value: true
-    - Class: jsk_rviz_plugin/TFTrajectory
-      Enabled: true
-      Name: TFTrajectory
-      Value: true
-      color: 25; 255; 240
-      duration: 10000
-      frame: base_link
-      line_width: 0.30000001192092896
     - Alpha: 0.699999988079071
       Class: rviz/Map
       Color Scheme: costmap
@@ -453,7 +449,7 @@ Visualization Manager:
       Marker Topic: /safety_limit/next_robot_position
       Name: Marker
       Namespaces:
-        next_robot_position: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -580,8 +576,8 @@ Visualization Manager:
     - Alpha: 0.20000000298023224
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 36.51028060913086
-        Min Value: -9.10739517211914
+        Max Value: 33.390113830566406
+        Min Value: -0.519909143447876
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -660,6 +656,98 @@ Visualization Manager:
       Transport Hint: raw
       Unreliable: false
       Value: false
+    - Class: rviz/Axes
+      Enabled: true
+      Length: 2
+      Name: Axes
+      Radius: 0.30000001192092896
+      Reference Frame: odom_link
+      Value: true
+    - Class: rviz/Axes
+      Enabled: true
+      Length: 2
+      Name: Axes
+      Radius: 0.30000001192092896
+      Reference Frame: odom_link2
+      Value: true
+    - Class: jsk_rviz_plugin/TFTrajectory
+      Enabled: true
+      Name: TFTrajectory
+      Value: true
+      color: 25; 255; 240
+      duration: 10000
+      frame: base_link
+      line_width: 0.30000001192092896
+    - Class: jsk_rviz_plugin/TFTrajectory
+      Enabled: true
+      Name: TFTrajectory
+      Value: true
+      color: 255; 0; 0
+      duration: 100000
+      frame: odom_link
+      line_width: 0.30000001192092896
+    - Class: jsk_rviz_plugin/TFTrajectory
+      Enabled: true
+      Name: TFTrajectory
+      Value: true
+      color: 255; 255; 0
+      duration: 100000
+      frame: odom_link2
+      line_width: 0.30000001192092896
+    - Class: jsk_rviz_plugin/PieChart
+      Enabled: true
+      Name: km/h
+      Topic: /robot_linear_vel2
+      Value: true
+      auto color change: false
+      background color: 0; 0; 0
+      backround alpha: 0.5
+      clockwise rotate direction: false
+      foreground alpha: 0.699999988079071
+      foreground alpha 2: 0.4000000059604645
+      foreground color: 25; 255; 240
+      left: 260
+      max color: 255; 0; 0
+      max value: 4
+      min value: 0
+      show caption: true
+      size: 200
+      text size: 30
+      top: 30
+    - Angle Tolerance: 0.10000000149011612
+      Class: rviz/Odometry
+      Covariance:
+        Orientation:
+          Alpha: 0.5
+          Color: 255; 255; 127
+          Color Style: Unique
+          Frame: Local
+          Offset: 1
+          Scale: 1
+          Value: true
+        Position:
+          Alpha: 0.30000001192092896
+          Color: 204; 51; 204
+          Scale: 1
+          Value: true
+        Value: true
+      Enabled: true
+      Keep: 1000000
+      Name: Odometry
+      Position Tolerance: 0.10000000149011612
+      Shape:
+        Alpha: 1
+        Axes Length: 1
+        Axes Radius: 0.10000000149011612
+        Color: 255; 25; 0
+        Head Length: 0.30000001192092896
+        Head Radius: 0.10000000149011612
+        Shaft Length: 1
+        Shaft Radius: 0.05000000074505806
+        Value: Arrow
+      Topic: /odom/filtered2
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -688,25 +776,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 30.273468017578125
+      Distance: 18.398662567138672
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.4280054569244385
-        Y: -2.3167717456817627
-        Z: -3.470309257507324
+        X: 2.285336494445801
+        Y: -1.0569735765457153
+        Z: 28.620208740234375
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7097971439361572
+      Pitch: 1.3597965240478516
       Target Frame: base_link
       Value: Orbit (rviz)
-      Yaw: 1.3422081470489502
+      Yaw: 1.5672119855880737
     Saved: ~
 Window Geometry:
   Displays:

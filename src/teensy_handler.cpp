@@ -19,6 +19,7 @@ vector<int32_t> int_sensor_data(30);
 vector<float> float_sensor_data(30);
 std_msgs::Float32 linear_vel;
 bool tf_publish=true;
+bool odom_2d=true;
 
 void int_sensor_data_callback(const std_msgs::Int32MultiArray& int_sensor_data_row){ 
      int_sensor_data=int_sensor_data_row.data;
@@ -28,7 +29,7 @@ void float_sensor_data_callback(const std_msgs::Float32MultiArray& float_sensor_
      static std::string odom_id="odom";
      static std::string base_link_id="base_link";
      float_sensor_data=float_sensor_data_row.data;
-     linear_vel.data=float_sensor_data_row.data[13]*3.6;
+     linear_vel.data=float_sensor_data_row.data[13]*3.6*0.5;
      /*
      static tf::TransformBroadcaster br;
      tf::Transform transform;
@@ -53,9 +54,18 @@ void float_sensor_data_callback(const std_msgs::Float32MultiArray& float_sensor_
      transformStamped.header.stamp = ros::Time::now();
      transformStamped.header.frame_id = odom_id;
      transformStamped.child_frame_id =  base_link_id;
-     transformStamped.transform.translation.x = float_sensor_data[19];
-     transformStamped.transform.translation.y = float_sensor_data[0];
-     transformStamped.transform.translation.z = float_sensor_data[2];
+     if(odom_2d){
+          //2D
+          transformStamped.transform.translation.x = float_sensor_data[19];
+          transformStamped.transform.translation.y = float_sensor_data[18];
+          transformStamped.transform.translation.z = 0;
+     }
+     else{
+          //3D
+          transformStamped.transform.translation.x = float_sensor_data[1];
+          transformStamped.transform.translation.y = float_sensor_data[0];
+          transformStamped.transform.translation.z = float_sensor_data[2];
+     }
 
      transformStamped.transform.rotation.x = -float_sensor_data[10];
      transformStamped.transform.rotation.y = float_sensor_data[9];
@@ -85,6 +95,8 @@ int main(int argc, char **argv){
      //param setting
      ros::NodeHandle pn("~");
      pn.param<bool>("tf_publish", tf_publish, true);
+     odom_2d=pn.param<bool>("odom_2d",true);
+
      
      while (n.ok())  {
 /*
@@ -103,17 +115,21 @@ int main(int argc, char **argv){
           odom.header.stamp=ros::Time::now();
           odom.header.seq=seq_odom;
           odom.child_frame_id="base_link";
-          //3D
           
-          odom.pose.pose.position.x=float_sensor_data[1];
-          odom.pose.pose.position.y=float_sensor_data[0];
-          odom.pose.pose.position.z=float_sensor_data[2];
           
-          //2D
           
-          //odom.pose.pose.position.x=float_sensor_data[19];
-          //odom.pose.pose.position.y=float_sensor_data[18];
-          //odom.pose.pose.position.z=0.0;
+          if(odom_2d){
+               //2D
+               odom.pose.pose.position.x=float_sensor_data[19];
+               odom.pose.pose.position.y=float_sensor_data[18];
+               odom.pose.pose.position.z=0.0;
+          }
+          else{
+               //3D
+               odom.pose.pose.position.x=float_sensor_data[1];
+               odom.pose.pose.position.y=float_sensor_data[0];
+               odom.pose.pose.position.z=float_sensor_data[2];
+          }
           
           odom.pose.pose.orientation.x=-float_sensor_data[10];
           odom.pose.pose.orientation.y=float_sensor_data[9];

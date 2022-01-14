@@ -233,7 +233,11 @@ Visualization Manager:
           Value: true
         map:
           Value: true
+        odom_link:
+          Value: true
         odom_link2:
+          Value: true
+        odom_raw:
           Value: true
         rear_lrf_link:
           Value: true
@@ -272,7 +276,11 @@ Visualization Manager:
                 {}
           floor:
             {}
+          odom_link:
+            {}
           odom_link2:
+            {}
+          odom_raw:
             {}
       Update Interval: 0
       Value: true
@@ -576,8 +584,8 @@ Visualization Manager:
     - Alpha: 0.20000000298023224
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 33.390113830566406
-        Min Value: -0.519909143447876
+        Max Value: 36.51028060913086
+        Min Value: -9.10739517211914
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -748,6 +756,31 @@ Visualization Manager:
       Topic: /odom/filtered2
       Unreliable: false
       Value: true
+    - Buffer length: 100
+      Class: jsk_rviz_plugin/Plotter2D
+      Enabled: true
+      Name: Plotter2D
+      Show Value: true
+      Topic: /robot_diff_vel
+      Value: true
+      auto color change: false
+      auto scale: true
+      background color: 0; 0; 0
+      backround alpha: 0
+      border: true
+      foreground alpha: 0.699999988079071
+      foreground color: 25; 255; 240
+      height: 150
+      left: 500
+      linewidth: 1
+      max color: 255; 0; 0
+      max value: 1
+      min value: -1
+      show caption: true
+      text size: 12
+      top: 30
+      update interval: 0.03999999910593033
+      width: 200
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48

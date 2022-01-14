@@ -3,10 +3,14 @@
     <arg name="waypoint_record" default="false" />
     <!--<arg name="bag_file" default="/home/share/rosbag/2022-01-07-06-33-15.bag" />-->
     
-    <arg name="bag_file" default="/home/share/rosbag/2022-01-13-02-54-31.bag" />
+    <arg name="bag_file" default="/home/share/rosbag/2022-01-13-06-35-02b_nav.bag" />
+    <arg name="map_pcd" default="$(find kcctcore)/config/pcd/kcct_b11.pcd" />
+    <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/kcct_b12.csv"/>
+    <!--
+    <arg name="bag_file" default="/home/share/rosbag/2022-01-13-02-54-31g.bag" />
     <arg name="map_pcd" default="$(find kcctcore)/config/pcd/kcct_g10.pcd" />
     <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/kcct_g11.csv"/>
-    
+    -->
     <!--
     <arg name="bag_file" default="/home/share/rosbag/naka211023.bag" />
     <arg name="map_pcd" default="$(find kcctcore)/config/pcd/naka211023.pcd" />
@@ -44,5 +48,5 @@
     
     <node pkg="kcctcore" type="launch_delayed.sh" args="0 rosbag play $(arg bag_file) -r 1.0 --clock --topic /velodyne_points /yolo_image /float_sensor_data /initialpose /image_raw /scan /odomerter_data" name="rosbag_play" output="screen" />
 
-    <include file="$(find passiveodom)/launch/odom_pub.launch">
+    <include file="$(find passiveodom)/launch/odom_pub.launch"/>
 </launch>

@@ -20,6 +20,7 @@ vector<float> float_sensor_data(30);
 std_msgs::Float32 linear_vel;
 bool tf_publish=true;
 bool odom_2d=true;
+ros::Publisher vel_pub;
 
 void int_sensor_data_callback(const std_msgs::Int32MultiArray& int_sensor_data_row){ 
      int_sensor_data=int_sensor_data_row.data;
@@ -30,6 +31,7 @@ void float_sensor_data_callback(const std_msgs::Float32MultiArray& float_sensor_
      static std::string base_link_id="base_link";
      float_sensor_data=float_sensor_data_row.data;
      linear_vel.data=float_sensor_data_row.data[13]*3.6*0.5;
+     vel_pub.publish(linear_vel);
      /*
      static tf::TransformBroadcaster br;
      tf::Transform transform;
@@ -87,7 +89,7 @@ int main(int argc, char **argv){
      ros::NodeHandle lSubscriber("");
      //ros::Subscriber int_sub = lSubscriber.subscribe("int_sensor_data", 50, int_sensor_data_callback);
      ros::Subscriber float_sub = lSubscriber.subscribe("float_sensor_data", 50, float_sensor_data_callback);
-     ros::Publisher vel_pub = n.advertise<std_msgs::Float32>("robot_linear_vel", 10); 
+     vel_pub = n.advertise<std_msgs::Float32>("robot_linear_vel", 10); 
      ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 10); 
      ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>("imu/data", 10);
      ros::Publisher mag_pub = n.advertise<sensor_msgs::MagneticField>("imu/mag", 10); 
@@ -182,7 +184,7 @@ int main(int argc, char **argv){
 
           odom_pub.publish(odom);
           imu_pub.publish(imu);
-          vel_pub.publish(linear_vel);
+          
           mag_pub.publish(mag);
           ros::spinOnce();
           loop_rate.sleep();

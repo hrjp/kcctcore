@@ -4,12 +4,14 @@
     <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/demo2d.csv"/>
     <arg name="world_name" default="$(find kcctsim)/worlds/clearpath_playpen.world"/>
     <arg name="map_2d_file" default="$(find kcctcore)/config/map/sim1.yaml" />
+    <arg name="waypoint_marking" default="false"/>
 
-    <include file="$(find kcctcore)/launch/navigation.launch">
+    <include file="$(find kcctcore)/launch/kcctcore_master.launch">
         <arg name="sim" default="$(arg sim)" />
         <arg name="map_2d" default="$(arg map_2d)"/>
         <arg name="waypoint_file" default="$(arg waypoint_file)"/>
         <arg name="world_name" default="$(arg world_name)"/>
         <arg name="map_2d_file" default="$(arg map_2d_file)" />
+        <arg name="waypoint_marking" default="$(arg waypoint_marking)"/>
     </include>
 </launch>

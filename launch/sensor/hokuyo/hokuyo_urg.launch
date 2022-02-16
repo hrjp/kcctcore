@@ -1,7 +1,4 @@
 <launch>
-    <node pkg="tf" type="static_transform_publisher" name="stf_hokuyo3d_laser" args="0.225 -0.255 0.0 0.0 0.0 0.0 camera_link 2d_blue 100"/>
-	<node pkg="tf" type="static_transform_publisher" name="stf_hokuyo3d_laser2" args="-0.485 0.255 0.0 3.14159 0.0 0.0 camera_link 2d_orange 100"/>
-	<node pkg="tf" type="static_transform_publisher" name="stp_laser" args="0 0 0.25 0 0 0 base_link camera_link 100" />
 <node name="urg_node" pkg="urg_node" type="urg_node" output="screen">
  	<remap from="/scan" to="/scan1" />	
     	<param name="ip_address" value="192.168.1.10"/>

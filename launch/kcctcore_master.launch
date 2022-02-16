@@ -1,0 +1,36 @@
+<launch>
+	<arg name="sim" default="true" />
+    <arg name="map_2d" default="false" />
+    <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/naka211023.csv"/>
+    <arg name="world_name" default="$(find kcctsim)/worlds/autoware.world"/>
+    <arg name="map_pcd" default="$(find kcctcore)/config/pcd/autoware_world.pcd" />
+    <arg name="map_2d_file" default="$(find kcctcore)/config/map/sim1.yaml" />
+    <arg name="use_hdl_localization" default="true" />
+    <arg name="waypoint_marking" default="false"/>
+
+    <include file="$(find kcctcore)/launch/include/localization.launch">
+        <arg name="sim" default="$(arg sim)" />
+        <arg name="map_2d" default="$(arg map_2d)" />
+        <arg name="waypoint_file" default="$(arg waypoint_file)"/>
+        <arg name="world_name" default="$(arg world_name)"/>
+        <arg name="map_pcd" value="$(arg map_pcd)" />
+        <arg name="map_2d_file" default="$(arg map_2d_file)" />
+        <arg name="use_hdl_localization" default="$(arg use_hdl_localization)" />
+    </include>
+
+    <group if="$(arg waypoint_marking)">
+        <include file="$(find waypoint_tools)/launch/waypoint_record.launch"/>
+    </group>
+    <group unless="$(arg waypoint_marking)">
+        <include file="$(find kcctcore)/launch/include/planner.launch">
+            <arg name="waypoint_file" default="$(arg waypoint_file)"/>
+        </include>
+        <!--<include file="$(find kcctdetection)/launch/person_detection.launch"/>-->
+        
+    </group>
+
+    <include file="$(find kcctcore)/launch/include/rviz.launch">
+        <arg name="map_2d" default="$(arg map_2d)" />
+        <arg name="waypoint_marking" default="$(arg waypoint_marking)" />
+    </include>
+</launch>

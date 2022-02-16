@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="waypoint_record" default="false" />
+    <arg name="bag_file" default="/home/share/rosbag/2021-12-19-02-01-36.bag" />
+    <arg name="map_pcd" default="$(find kcctcore)/config/pcd/y2.pcd" />
+    <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/y2.csv"/>
+
+    <param name="/use_sim_time" value="true" />
+    <group if="$(arg waypoint_record)">
+        <node name="initial3d" pkg="kcctplugin" type="3d_initial_pose" output="screen"/>
+        <include file="$(find waypoint_tools)/launch/waypoint_record.launch"/>
+    </group>
+    <include file="$(find kcctcore)/launch/include/robot_model.launch"/>
+    
+    <node name="colorTracking" pkg="imageProcessor" type="colorTracking" >
+        <remap from="image" to="image_raw"/>
+    </node>
+    
+    
+    <node name="teensy_handler" pkg="kcctcore" type="teensy_handler">
+		<param name="tf_publish" value="false" />
+	</node>
+    <include file="$(find kcctcore)/launch/include/hdl_localization.launch">
+        <arg name="map_pcd" default="$(arg map_pcd)" />
+    </include>
+
+    <include file="$(find kcctcore)/launch/test/hdl_people_tracking.launch" />
+    
+    <include file="$(find kcctcore)/launch/include/planner.launch">
+        <arg name="waypoint_file" default="$(arg waypoint_file)"/>
+    </include>
+
+    <include file="$(find kcctcore)/launch/include/rviz.launch">
+        <arg name="map_2d" default="false" />
+        <arg name="waypoint_marking" default="$(arg waypoint_record)" />
+    </include>
+    
+    <node pkg="kcctcore" type="launch_delayed.sh" args="0 rosbag play $(arg bag_file) -r 1.0 --clock --topic /velodyne_points /yolo_image /float_sensor_data /initialpose /image_raw /scan" name="rosbag_play" output="screen" />
+</launch>

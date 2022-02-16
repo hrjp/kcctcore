@@ -1,0 +1,53 @@
+<launch>
+	<arg name="sim" default="true" />
+    <arg name="map_2d" default="false" />
+    <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/kcct_g10.csv"/>
+    <arg name="world_name" default="$(find kcctsim)/worlds/autoware.world"/>
+    <arg name="map_pcd" default="$(find kcctcore)/config/pcd/autoware_world.pcd" />
+    <arg name="map_2d_file" default="$(find kcctcore)/config/map/sim1.yaml" />
+    <arg name="use_hdl_localization" default="true" />
+
+
+    <group if="$(arg sim)">
+        <include file="$(find kcctcore)/launch/include/sensor.launch">
+            <arg name="sim" default="$(arg sim)" />
+        </include>
+        <include file="$(find kcctsim)/launch/sim.launch">
+            <arg name="gui" default="true"/>
+            <arg name="world_name" default="$(arg world_name)"/>
+        </include>
+    </group>
+    <group unless="$(arg sim)">
+        <group if="$(arg use_hdl_localization)">
+            <include file="$(find kcctcore)/launch/include/sensor.launch">
+                <arg name="tf_publish" default="false" />
+                <arg name="sim" default="$(arg sim)" />
+            </include>
+        </group>
+        <group unless="$(arg use_hdl_localization)">
+            <include file="$(find kcctcore)/launch/include/sensor.launch">
+                <arg name="tf_publish" default="true" />
+                <arg name="sim" default="$(arg sim)" />
+            </include>
+        </group>
+    </group>
+
+    <group if="$(arg map_2d)">
+        <node pkg="tf" type="static_transform_publisher" name="stp_laser" args="0 0 0 0.0 0 0 map floor 100" />
+        <include file="$(find kcctcore)/launch/include/amcl.launch">
+            <arg name="map_file" default="$(arg map_2d_file)"/>
+        </include>
+    </group>
+    <group unless="$(arg map_2d)">
+        <group if="$(arg use_hdl_localization)">
+            <include file="$(find kcctcore)/launch/include/hdl_localization.launch">
+            <arg name="map_pcd" value="$(arg map_pcd)" />
+            </include>
+        </group>
+        <group unless="$(arg use_hdl_localization)">
+            <node pkg="kcctcore" type="launch_delayed.sh" args="2 roslaunch kcctcore mcl_3dl.launch map_pcd:=$(arg map_pcd)" name="launch_delayed2" output="screen" />
+        </group>
+    </group>
+
+    <node name="initial3d" pkg="kcctplugin" type="3d_initial_pose" output="screen"/>
+</launch>

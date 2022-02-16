@@ -10,6 +10,7 @@
 #include <nav_msgs/Path.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <std_msgs/Int32.h>
+#include <std_msgs/Bool.h>
 #include <std_msgs/Int32MultiArray.h>
 #include <std_msgs/String.h>
 #include <geometry_msgs/Twist.h>
@@ -87,6 +88,12 @@ void targetPose_callback(const geometry_msgs::Pose& pose_message)
     targetPose = pose_message;
 }
 
+std_msgs::String now_type;
+void now_type_callback(const std_msgs::String& now_type_)
+{
+    now_type=now_type_;
+}
+
 double quat2yaw(geometry_msgs::Quaternion orientation)
 {
     double roll, pitch, yaw;
@@ -146,10 +153,13 @@ int main(int argc, char **argv){
     ros::Subscriber recovery_mode_sub = lSubscriber.subscribe("recovery/mode", 10 , recovery_mode_callback);
     ros::Subscriber targetWpPose_sub = lSubscriber.subscribe("twist_maneger/targetWpPose_in", 50, targetWpPose_callback);
     ros::Subscriber targetPose_sub = lSubscriber.subscribe("twist_maneger/targetPose_in", 10 , targetPose_callback);
+    ros::Subscriber now_type_sub = lSubscriber.subscribe("waypoint/now_type", 10, now_type_callback);
 
     //cmd_vel publisher
     ros::Publisher cmd_pub=n.advertise<geometry_msgs::Twist>("selected_cmd_vel", 1);
     ros::Publisher mode_pub = n.advertise<std_msgs::String>("mode", 10);
+
+    ros::Publisher yolo_pub = n.advertise<std_msgs::Bool>("enable_yolo", 10);
 
     tf_position nowPosition(map_id, base_link_id, looprate);
     mode.data = robot_status_str(robot_status::stop);
@@ -159,7 +169,7 @@ int main(int argc, char **argv){
     zero_vel.linear.x=0.0;
     zero_vel.angular.z=0.0;
     bool pause_mode=true;
-    bool person_mode=false;
+    
     bool run_init = true;
     bool recovery_init = false;
     int wp_stack=0;
@@ -168,7 +178,6 @@ int main(int argc, char **argv){
 
         if(button_clicked==buttons_status_start){
             pause_mode=false;
-            person_mode=false;
             mode.data = robot_status_str(robot_status::run);
 
         }
@@ -177,27 +186,7 @@ int main(int argc, char **argv){
             mode.data = robot_status_str(robot_status::stop);
         }
 
-        //camera
-        if(wp_stack<now_wp){
-            if(wp_type.at(now_wp)==waypoint_type_camera){
-                std::cout<<"camera mode"<<std::endl;
-                person_mode=true;
-                wp_stack=now_wp;
-            }
-            if(wp_type.at(now_wp)==waypoint_type_stop){
-                pause_mode=true;
-                wp_stack=now_wp;
-            }
-        }
-
-
-        if(person_mode){
-            cmd_vel=camera_cmd_vel;
-            std::cout<<"camera_mode"<<std::endl;
-        }
-        else{
-            cmd_vel=mcl_cmd_vel;
-        }
+        cmd_vel=mcl_cmd_vel;
 
         if(run_init){
             //run init mode
@@ -263,11 +252,56 @@ int main(int argc, char **argv){
             }
         }
 
+
+        //人検出
+        static bool person_mode=false;
+        static bool person_mode_once=true;
+        static bool person_angle=false;
+        static bool enable_yolo=false;
+        if(now_type.data==waypoint_type_str(waypoint_type::person_detection)){
+            if(person_mode_once){
+                person_mode=true;
+                person_mode_once=false;
+                person_angle=true;
+            }
+        }
+        else{
+            person_mode_once=true;
+            
+        }
+        if(person_mode){
+            // start buttonで通常走行に復帰
+            if(button_clicked==buttons_status_start){
+                person_mode=false;
+                enable_yolo=false;
+            }
+            //角度を合わせてから追従開始
+            else if(person_angle){
+                double dx = targetPose.position.x - nowPosition.getPose().position.x;
+                double dy = targetPose.position.y - nowPosition.getPose().position.y;
+                double targetAngle = atan2(dy, dx);
+                double diffAngle = arrangeAngle(targetAngle - nowPosition.getYaw());
+
+                cmd_vel.linear.x = 0;
+                cmd_vel.angular.z = diffAngle * 1.5;
+                if(abs(diffAngle) < 10*M_PI/180){
+                    person_angle = false;
+                }
+            }
+            else{
+                cmd_vel.linear.x=camera_cmd_vel.linear.x;
+                cmd_vel.angular.z=camera_cmd_vel.angular.z;
+                enable_yolo=true;
+            }
+            
+        }
+
+        std_msgs::Bool enable_yolo_msg;
+        enable_yolo_msg.data=enable_yolo;
+        yolo_pub.publish(enable_yolo_msg);
+
         cmd_pub.publish(cmd_vel);
         mode_pub.publish(mode);
-
-
-
 
         button_clicked=buttons_status_free;
         ros::spinOnce();//subsucriberの割り込み関数はこの段階で実装される

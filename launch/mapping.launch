@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="map_2d" default="true" />
-    <arg name="bag_file" default="/home/share/rosbag/2021-10-24-06-32-04.bag" />
-    <arg name="playback_speed" default="2.0" />
+    <arg name="map_2d" default="false" />
+    <arg name="bag_file" default="/home/share/rosbag/y2.bag" />
+    <arg name="playback_speed" default="5.0" />
 
     <param name="/use_sim_time" value="true" />
 
@@ -16,7 +16,6 @@
 	    </node>
         <node name="teensy_handler" pkg="kcctcore" type="teensy_handler"/>
         <include file="$(find kcctcore)/launch/sensor/velodyne/pc2scan.launch"/>
-        <node pkg="rviz" type="rviz" name="rviz" args="-d $(find kcctcore)/config/rviz/waypoint2d.rviz" />
         <node pkg="kcctcore" type="launch_delayed.sh" args="0 rosbag play $(arg bag_file) -r $(arg playback_speed) --clock --topic /velodyne_points /float_sensor_data" name="launch_delayed1" output="screen" />
     </group>
     <group unless="$(arg map_2d)">

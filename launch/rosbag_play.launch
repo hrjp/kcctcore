@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 <launch>
     <arg name="waypoint_record" default="false" />
-    <!--<arg name="bag_file" default="/home/share/rosbag/kcct_g10.bag" />
-    <arg name="map_pcd" default="$(find kcctcore)/config/pcd/kcct_g10.pcd" />-->
     <arg name="bag_file" default="/home/share/rosbag/2021-12-19-02-01-36.bag" />
     <arg name="map_pcd" default="$(find kcctcore)/config/pcd/y2.pcd" />
     <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/y2.csv"/>

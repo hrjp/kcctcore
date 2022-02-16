@@ -49,6 +49,7 @@
         <remap from="cloud" to="laser2pc/pc2"/>
         <remap from="safety_limit/costmap" to="costmap_node/my_costmap/costmap"/>
      </node>
+
      <!--recovery-->
      <node name="wpBack_recovery" pkg="kcctnavigation" type="wpBack_recovery">
         <param name="base_link_frame_id" value="base_link"/>

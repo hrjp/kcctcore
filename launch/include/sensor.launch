@@ -31,12 +31,16 @@
 			<node name="teensy_handler" pkg="kcctcore" type="teensy_handler">
 				<param name="tf_publish" value="$(arg tf_publish)" />
 			</node>
-			
+			<!--
 			<node name="uvc_camera_node" pkg="uvc_camera" type="uvc_camera_node" >
 				<remap from="image_raw" to="image_raw"/>
 				<param name="device" value="/dev/video4" />
 			</node>
+			-->
 		<!--<include file="$(find kcctcore)/launch/sensor/ublox/gnss.launch"/>-->
     </group>
+
+	<!--laserscanをpointcloud2に変換して配信-->
+	<node pkg="kcctcore" name="laser2pc" type="laser2pc" output="screen" />
 
 </launch>

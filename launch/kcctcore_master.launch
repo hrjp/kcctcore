@@ -1,13 +1,13 @@
 <launch>
-	<arg name="sim" default="true" />
+	<arg name="sim" default="false" />
     <arg name="map_2d" default="false" />
-    <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/naka211023.csv"/>
-    <arg name="map_pcd" default="$(find kcctcore)/config/pcd/autoware_world.pcd" />
+    <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/kcct_b11.csv"/>
+    <arg name="map_pcd" default="$(find kcctcore)/config/pcd/kcct_b11.pcd" />
     <arg name="world_name" default="$(find kcctsim)/worlds/autoware.world"/>
     <arg name="map_2d_file" default="$(find kcctcore)/config/map/sim1.yaml" />
     <arg name="use_hdl_localization" default="true" />
     <arg name="waypoint_marking" default="false"/>
-    <arg name="object_avoidance" default="false"/>
+    <arg name="object_avoidance" default="true"/>
 
 
     <include file="$(find kcctcore)/launch/include/localization.launch">

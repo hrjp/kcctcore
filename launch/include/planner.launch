@@ -1,5 +1,6 @@
 <launch>
     <arg name="object_avoidance" default="false"/>
+    <arg name="endless" default="false"/>
     <arg name="waypoint_file" default=""/>
 
     <include file="$(find kcctcore)/launch/include/costmap.launch"/>
@@ -14,6 +15,7 @@
         <param name="target_deviation" value="2.5"/>
         <param name="precision_target_deviation" value="0.8"/>
         <param name="final_target_deviation" value="0.4"/>
+        <param name="endless" value="$(arg endless)"/>
         <remap from="path" to="waypoint/path"/>
         <remap from="successPlan" to="astar_planning_node/successPlan"/>
     </node>
@@ -80,8 +82,8 @@
         <param name="base_link_frame_id" value="base_link"/>
         <param name="map_frame_id" value="map"/>
         <param name="loop_rate" value="30"/>
-        <param name="maxVelocity" value="1.2"/>
-        <param name="precision_maxVelocity" value="0.5"/>
+        <param name="maxVelocity" value="0.3"/>
+        <param name="precision_maxVelocity" value="0.3"/>
         <param name="max_angular_vel" value="0.4"/>
         <param name="maxCurvature" value="3"/>
         <remap from="pure_posePursuit/pose_in" to="lane_planner/pose_out"/>

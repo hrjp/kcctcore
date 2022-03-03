@@ -1,13 +1,14 @@
 <launch>
 	<arg name="sim" default="false" />
     <arg name="map_2d" default="false" />
-    <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/kcct_b11.csv"/>
-    <arg name="map_pcd" default="$(find kcctcore)/config/pcd/kcct_b11.pcd" />
+    <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/lab.csv"/>
+    <arg name="map_pcd" default="$(find kcctcore)/config/pcd/lab.pcd" />
     <arg name="world_name" default="$(find kcctsim)/worlds/autoware.world"/>
     <arg name="map_2d_file" default="$(find kcctcore)/config/map/sim1.yaml" />
     <arg name="use_hdl_localization" default="true" />
     <arg name="waypoint_marking" default="false"/>
     <arg name="object_avoidance" default="true"/>
+    <arg name="endless" default="false"/>
 
 
     <include file="$(find kcctcore)/launch/include/localization.launch">
@@ -27,6 +28,8 @@
         <include file="$(find kcctcore)/launch/include/planner.launch">
             <arg name="waypoint_file" default="$(arg waypoint_file)"/>
             <arg name="object_avoidance" default="$(arg object_avoidance)"/>
+            <arg name="endless" default="$(arg endless)"/>
+
         </include>
         <!--<include file="$(find kcctdetection)/launch/person_detection.launch"/>-->
         

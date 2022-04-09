@@ -2,7 +2,7 @@
 	<arg name="sim" default="false" />
     <arg name="map_2d" default="false" />
     <arg name="waypoint_file" default="$(find kcctcore)/config/waypointdata/lab.csv"/>
-    <arg name="map_pcd" default="$(find kcctcore)/config/pcd/lab.pcd" />
+    <arg name="map_pcd" default="$(find kcctcore)/config/pcd/PointCloudMap2022-4-5-3-2.pcd" />
     <arg name="world_name" default="$(find kcctsim)/worlds/autoware.world"/>
     <arg name="map_2d_file" default="$(find kcctcore)/config/map/sim1.yaml" />
     <arg name="use_hdl_localization" default="true" />
@@ -32,7 +32,7 @@
 
         </include>
         <!--<include file="$(find kcctdetection)/launch/person_detection.launch"/>-->
-        
+        <include file="$(find kcctdetection)/launch/clustering_and_tracking_test.launch"/>
     </group>
 
     <include file="$(find kcctcore)/launch/include/rviz.launch">

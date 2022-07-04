@@ -2,8 +2,8 @@
 /**
 * @file robot_state.cpp
 * @brief robot status
-* @author Shunya Hara
-* @date 2021.3.6
+* @author Shunya Hara -> Akiro Harada
+* @date 2021.3.6 -> 2022.7.4
 * @details robot state tag
 */
 #pragma once

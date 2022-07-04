@@ -1,8 +1,8 @@
-/**
-* @file button_status.cpp
+/*
+* @file button_state.cpp
 * @brief rviz pugin button status
-* @author Shunya Hara
-* @date 2021.3.6
+* @author Shunya Hara -> Akiro Harada
+* @date 2021.3.6 -> 2022.7.4
 * @details button name tag
 */
 #pragma once

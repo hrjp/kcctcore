@@ -1,8 +1,16 @@
+/**
+* @file waypoint_type.cpp
+* @brief waypoint type define
+* @author Shunya Hara
+* @date 2021.3.6
+* @details wp type name tag
+*/
+
 #pragma once
 #include <string>
 
 //addition status
-enum class waypoint_type{
+enum class WaypointType{
     skip,
     normal,
     precision,
@@ -10,15 +18,15 @@ enum class waypoint_type{
 
 };
 
-std::string waypoint_type_str(waypoint_type status){
-    switch (status){
-        case(waypoint_type::skip):
+std::string WaypointType2String(WaypointType wpt){
+    switch (wpt){
+        case(WaypointType::skip):
             return "skip";
-        case(waypoint_type::normal):
+        case(WaypointType::normal):
             return "normal";
-        case(waypoint_type::precision):
+        case(WaypointType::precision):
             return "precision";
-        case(waypoint_type::person_detection):
+        case(WaypointType::person_detection):
             return "person_detection";
         default:
             return "";

@@ -65,10 +65,16 @@ void cmd_vel_camera_cb(const geometry_msgs::Twist& cmd_vel_camera)
     _cmd_vel_camera = cmd_vel_camera;
 } // void cmd_vel_camera_cb()
 
-WaypointType _now_wpType;
-void now_wpType_cb(const std_msgs::String& now_wpType){
-    _now_wpType =  String2WaypointType(now_wpType.data);
-} // void now_wpType_cb()
+int32_t _wp_now;
+void wp_now_cb(const std_msgs::Int32& wp_now)
+{
+    _wp_now = wp_now.data;
+}
+
+WaypointType _wpType;
+void wpType_cb(const std_msgs::String& wpType){
+    _wpType =  String2WaypointType(wpType.data);
+} // void wpType_cb()
 
 double getDeltaAngle(double current, double target)
 {
@@ -119,16 +125,21 @@ int main(int argc, char **argv){
     bool is_initState = true;
     bool is_initState_recov = false;
 
+    int32_t wp_recurStart = -1;
+    int32_t recursionCount = 0;
+
     /* Publisher */
     ros::Publisher cmd_vel_pub = nh.advertise<geometry_msgs::Twist>("selected_cmd_vel", 1);
     ros::Publisher robotState_pub = nh.advertise<std_msgs::String>("mode", 10);
+    ros::Publisher wpOverride_pub = nh.advertise<std_msgs::Int32>("waypoint/set", 1);
     ros::Publisher yolo_pub = nh.advertise<std_msgs::Bool>("enable_yolo", 10);
 
     /* Subscriber */
     ros::Subscriber robotState_sub = lSubscriber.subscribe("mode_select/mode", 10 , robotState_cb);
     ros::Subscriber robotState_recov_sub = lSubscriber.subscribe("recovery/mode", 10 , robotState_recov_cb);
     ros::Subscriber buttonState_sub = lSubscriber.subscribe("buttons", 50, buttonState_cb);
-    ros::Subscriber now_wpType_sub = lSubscriber.subscribe("waypoint/now_type", 10, now_wpType_cb);
+    ros::Subscriber wp_now_sub = lSubscriber.subscribe("waypoint/now", 50, wp_now_cb);
+    ros::Subscriber wpType_sub = lSubscriber.subscribe("waypoint/now_type", 10, wpType_cb);
     ros::Subscriber cmd_vel_mcl_sub = lSubscriber.subscribe("mcl_cmd_vel", 50, cmd_vel_mcl_cb);
     ros::Subscriber cmd_vel_recov_sub = lSubscriber.subscribe("recovery/cmd_vel", 10, cmd_vel_recov_cb);
     ros::Subscriber cmd_vel_camera_sub = lSubscriber.subscribe("camera_cmd_vel", 50, cmd_vel_camera_cb);
@@ -202,8 +213,30 @@ int main(int argc, char **argv){
                 break;
         } // switch(RobotState)
 
-        /* Person Tracking */
-
+        /* WaypointType */
+        switch(_wpType){
+            case WaypointType::recursion_start:
+                /* YoloStart */
+                wp_recurStart = _wp_now;
+                recursionCount = 0;
+                break;
+            case WaypointType::recursion_end:
+                /* YoloStop */
+                if(wp_recurStart == -1) break;
+                if(recursionCount > 2)
+                {
+                    ROS_INFO("RECURSION END");
+                    wp_recurStart = -1;
+                }
+                else
+                {
+                    std_msgs::Int32 msg;
+                    msg.data = wp_recurStart + 1;
+                    wpOverride_pub.publish(msg);
+                    recursionCount++;
+                }
+                break;
+        } // switch(WaypointType)
 
         /* Publish */
         cmd_vel_pub.publish(cmd_vel);

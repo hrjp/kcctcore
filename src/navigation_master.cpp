@@ -10,6 +10,7 @@
 #include <std_msgs/Int32.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Bool.h>
+#include <std_msgs/Int32MultiArray.h>
 #include <geometry_msgs/Pose.h>
 
 #include "kcctcore/robot_state.h"
@@ -63,6 +64,11 @@ void cmd_vel_camera_cb(const geometry_msgs::Twist& cmd_vel_camera)
 {
     _cmd_vel_camera = cmd_vel_camera;
 } // void cmd_vel_camera_cb()
+
+WaypointType _now_wpType;
+void now_wpType_cb(const std_msgs::String& now_wpType){
+    _now_wpType =  String2WaypointType(now_wpType.data);
+} // void now_wpType_cb()
 
 double getDeltaAngle(double current, double target)
 {
@@ -122,6 +128,7 @@ int main(int argc, char **argv){
     ros::Subscriber robotState_sub = lSubscriber.subscribe("mode_select/mode", 10 , robotState_cb);
     ros::Subscriber robotState_recov_sub = lSubscriber.subscribe("recovery/mode", 10 , robotState_recov_cb);
     ros::Subscriber buttonState_sub = lSubscriber.subscribe("buttons", 50, buttonState_cb);
+    ros::Subscriber now_wpType_sub = lSubscriber.subscribe("waypoint/now_type", 10, now_wpType_cb);
     ros::Subscriber cmd_vel_mcl_sub = lSubscriber.subscribe("mcl_cmd_vel", 50, cmd_vel_mcl_cb);
     ros::Subscriber cmd_vel_recov_sub = lSubscriber.subscribe("recovery/cmd_vel", 10, cmd_vel_recov_cb);
     ros::Subscriber cmd_vel_camera_sub = lSubscriber.subscribe("camera_cmd_vel", 50, cmd_vel_camera_cb);

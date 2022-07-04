@@ -72,6 +72,7 @@ void wp_now_cb(const std_msgs::Int32& wp_now)
 }
 
 WaypointType _wpType;
+WaypointType _wpType_old;
 void wpType_cb(const std_msgs::String& wpType){
     _wpType =  String2WaypointType(wpType.data);
 } // void wpType_cb()
@@ -214,29 +215,31 @@ int main(int argc, char **argv){
         } // switch(RobotState)
 
         /* WaypointType */
-        switch(_wpType){
-            case WaypointType::recursion_start:
-                /* YoloStart */
-                wp_recurStart = _wp_now;
-                recursionCount = 0;
-                break;
-            case WaypointType::recursion_end:
-                /* YoloStop */
-                if(wp_recurStart == -1) break;
-                if(recursionCount > 2)
-                {
-                    ROS_INFO("RECURSION END");
-                    wp_recurStart = -1;
-                }
-                else
-                {
-                    std_msgs::Int32 msg;
-                    msg.data = wp_recurStart + 1;
-                    wpOverride_pub.publish(msg);
-                    recursionCount++;
-                }
-                break;
-        } // switch(WaypointType)
+        if(_wpType != _wpType_old){
+            switch(_wpType){
+                case WaypointType::recursion_start:
+                    /* YoloStart */
+                    wp_recurStart = _wp_now;
+                    recursionCount = 0;
+                    break;
+                case WaypointType::recursion_end:
+                    /* YoloStop */
+                    if(wp_recurStart == -1) break;
+                    if(recursionCount > 2)
+                    {
+                        wp_recurStart = -1;
+                    }
+                    else
+                    {
+                        std_msgs::Int32 msg;
+                        msg.data = wp_recurStart + 1;
+                        wpOverride_pub.publish(msg);
+                        recursionCount++;
+                    }
+                    break;
+            } // switch(WaypointType)
+            _wpType_old = _wpType;
+        }
 
         /* Publish */
         cmd_vel_pub.publish(cmd_vel);

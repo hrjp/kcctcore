@@ -11,6 +11,7 @@
 #include <std_msgs/String.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int32MultiArray.h>
+#include <std_msgs/Float32MultiArray.h>
 #include <geometry_msgs/Pose.h>
 
 #include "kcctcore/robot_state.h"
@@ -77,6 +78,11 @@ void wpType_cb(const std_msgs::String& wpType){
     _wpType =  String2WaypointType(wpType.data);
 } // void wpType_cb()
 
+bool _is_personDetected;
+void detectState_cb(const std_msgs::Float32MultiArray& camera){
+    _is_personDetected = camera.data.at(2);
+} // void detectState_cb()
+
 double getDeltaAngle(double current, double target)
 {
     current -= 360.0 * ((int)(current / 360.0));
@@ -129,6 +135,8 @@ int main(int argc, char **argv){
     int32_t wp_recurStart = -1;
     int32_t recursionCount = 0;
 
+    bool enable_yolo = false;
+
     /* Publisher */
     ros::Publisher cmd_vel_pub = nh.advertise<geometry_msgs::Twist>("selected_cmd_vel", 1);
     ros::Publisher robotState_pub = nh.advertise<std_msgs::String>("mode", 10);
@@ -146,6 +154,8 @@ int main(int argc, char **argv){
     ros::Subscriber cmd_vel_camera_sub = lSubscriber.subscribe("camera_cmd_vel", 50, cmd_vel_camera_cb);
     ros::Subscriber pose_target_sub = lSubscriber.subscribe("twist_maneger/targetPose_in", 10 , pose_target_cb);
     ros::Subscriber pose_targetWp_sub = lSubscriber.subscribe("twist_maneger/targetWpPose_in", 50, pose_targetWp_cb);
+    
+    ros::Subscriber detectState_sub = lSubscriber.subscribe("result", 50, detectState_cb);
 
     while(nh.ok()){
         
@@ -218,12 +228,10 @@ int main(int argc, char **argv){
         if(_wpType != _wpType_old){
             switch(_wpType){
                 case WaypointType::recursion_start:
-                    /* YoloStart */
                     wp_recurStart = _wp_now;
                     recursionCount = 0;
                     break;
                 case WaypointType::recursion_end:
-                    /* YoloStop */
                     if(wp_recurStart == -1) break;
                     if(recursionCount > 2)
                     {
@@ -241,11 +249,41 @@ int main(int argc, char **argv){
             _wpType_old = _wpType;
         }
 
+        /* Person Tracking */
+        if(wp_recurStart != -1)
+        {
+            if(_buttonState == ButtonState::START)
+            {
+                std_msgs::Int32 msg;
+                msg.data = wp_recurStart + 1;
+                wpOverride_pub.publish(msg);
+                wp_recurStart = -1;
+                enable_yolo = false;
+                _robotState = RobotState::RUN;
+            } // if
+            else if(_is_personDetected)
+            {
+                _robotState = RobotState::PERSON_TRACKING;
+                cmd_vel = _cmd_vel_camera;
+                enable_yolo = true;
+            } // else if
+            else
+            {
+                _robotState = RobotState::RUN;
+                enable_yolo = false;
+            } // else
+        } // if
+
         /* Publish */
         cmd_vel_pub.publish(cmd_vel);
+
         std_msgs::String robotState_msg;
         robotState_msg.data = RobotState2String(_robotState);
         robotState_pub.publish(robotState_msg);
+
+        std_msgs::Bool enable_yolo_msg;
+        enable_yolo_msg.data = enable_yolo;
+        yolo_pub.publish(enable_yolo_msg);
 
         /* Button Release*/
         _buttonState = ButtonState::FREE;

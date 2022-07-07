@@ -85,13 +85,17 @@ void detectState_cb(const std_msgs::Float32MultiArray& camera){
 
 double getDeltaAngle(double current, double target)
 {
-    current -= 360.0 * ((int)(current / 360.0));
-    target -= 360.0 * ((int)(target / 360.0));
+    double result;
 
-    if (std::abs(target - current) > 180)
-        return target - current - (target - current)>0?1.0:-1.0 * 360.0;
+    current -= (2*M_PI) * ((int)(current / (2*M_PI)));
+    target -= (2*M_PI) * ((int)(target / (2*M_PI)));
+
+    if (std::abs(target - current) > M_PI)
+        result = target - current - (target - current)>0?1.0:-1.0 * (2*M_PI);
     else
-        return target - current;
+        result = target - current;
+
+    return result;
 } // double getDeltaAngle()
 
 double quat2yaw(geometry_msgs::Quaternion orientation)

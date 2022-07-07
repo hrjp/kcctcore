@@ -7,6 +7,7 @@ Panels:
         - /Grid1/Offset1
         - /MapCloud1/Autocompute Value Bounds1
         - /MatchedCloud1/Autocompute Value Bounds1
+        - /VelodyneCloud1
       Splitter Ratio: 0.49042099714279175
     Tree Height: 432
   - Class: rviz/Selection
@@ -301,8 +302,8 @@ Visualization Manager:
       Queue Size: 10
       Selectable: true
       Size (Pixels): 3
-      Size (m): 0.20000000298023224
-      Style: Flat Squares
+      Size (m): 0.019999999552965164
+      Style: Points
       Topic: /velodyne_points
       Unreliable: false
       Use Fixed Frame: true
@@ -453,7 +454,7 @@ Visualization Manager:
       Marker Topic: /safety_limit/next_robot_position
       Name: Marker
       Namespaces:
-        next_robot_position: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
@@ -580,8 +581,8 @@ Visualization Manager:
     - Alpha: 0.20000000298023224
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 36.51028060913086
-        Min Value: -9.10739517211914
+        Max Value: 20.838226318359375
+        Min Value: -3.337378978729248
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -688,25 +689,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 30.273468017578125
+      Distance: 46.94993209838867
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.4280054569244385
-        Y: -2.3167717456817627
-        Z: -3.470309257507324
+        X: 3.0565643310546875
+        Y: -2.6543502807617188
+        Z: -2.1384198665618896
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7097971439361572
+      Pitch: 0.7747970819473267
       Target Frame: base_link
       Value: Orbit (rviz)
-      Yaw: 1.3422081470489502
+      Yaw: 1.8822076320648193
     Saved: ~
 Window Geometry:
   Displays:

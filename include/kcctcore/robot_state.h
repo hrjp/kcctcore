@@ -15,7 +15,8 @@ enum class RobotState{
     STOP,
     ADJUST_ANGLE,
     SAFETY_STOP,
-    RECOVERY
+    RECOVERY,
+    PERSON_TRACKING
 };
 
 std::unordered_map<RobotState, std::string> uom_robotState2String{
@@ -24,6 +25,7 @@ std::unordered_map<RobotState, std::string> uom_robotState2String{
     {RobotState::ADJUST_ANGLE, "adjust_angle"},
     {RobotState::SAFETY_STOP, "safety_stop"},
     {RobotState::RECOVERY, "recovery"},
+    {RobotState::PERSON_TRACKING, "person_tracking"},
     };
 
 std::unordered_map<std::string, RobotState> uom_string2RobotState{
@@ -32,6 +34,7 @@ std::unordered_map<std::string, RobotState> uom_string2RobotState{
     {"adjust_angle", RobotState::ADJUST_ANGLE},
     {"safety_stop", RobotState::SAFETY_STOP},
     {"recovery", RobotState::RECOVERY},
+    {"person_tracking", RobotState::PERSON_TRACKING}
     };
 
 std::string RobotState2String(RobotState rs){

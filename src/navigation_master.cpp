@@ -7,307 +7,294 @@
 */
 
 #include <ros/ros.h>
-#include <nav_msgs/Path.h>
-#include <visualization_msgs/MarkerArray.h>
 #include <std_msgs/Int32.h>
+#include <std_msgs/String.h>
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int32MultiArray.h>
-#include <std_msgs/String.h>
-#include <geometry_msgs/Twist.h>
-#include <nav_msgs/Path.h>
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <sstream>
+#include <std_msgs/Float32MultiArray.h>
+#include <geometry_msgs/Pose.h>
 
-#include "kcctcore_t/tf_position.h"
-#include "kcctcore/button_status.h"
+#include "kcctcore/robot_state.h"
+#include "kcctcore/button_state.h"
 #include "kcctcore/waypoint_type.h"
-#include "kcctcore/robot_status.h"
+#include "kcctcore_t/tf_position.h"
 
-using namespace std;
-
-geometry_msgs::Twist mcl_cmd_vel;
-void mcl_cmd_vel_callback(const geometry_msgs::Twist& cmd_vel_){
-    mcl_cmd_vel=cmd_vel_;
-}
-
-geometry_msgs::Twist camera_cmd_vel;
-void camera_cmd_vel_callback(const geometry_msgs::Twist& cmd_vel_){
-    camera_cmd_vel=cmd_vel_;
-}
-
-std_msgs::String mode;
-void mode_callback(const std_msgs::String& mode_message)
+RobotState _robotState = RobotState::STOP;
+void robotState_cb(const std_msgs::String& robotState)
 {
-    mode = mode_message;
-}
+    _robotState = String2RobotState(robotState.data);
+} // void robotState_cb()
 
-geometry_msgs::Twist recovery_cmd_vel;
-void recovery_cmd_callback(const geometry_msgs::Twist& cmd_message)
+RobotState _robotState_recov = RobotState::STOP;
+void robotState_recov_cb(const std_msgs::String& robotState_recov)
 {
-    recovery_cmd_vel = cmd_message;
-}
+    _robotState_recov = String2RobotState(robotState_recov.data);
+} // void robotState_recov_cb()
 
-std_msgs::String recovery_mode;
-void recovery_mode_callback(const std_msgs::String& mode_message)
+ButtonState _buttonState = ButtonState::FREE;
+void buttonState_cb(const std_msgs::Int32 buttonState){
+    _buttonState = static_cast<ButtonState>(buttonState.data);
+    ROS_INFO_STREAM("Input : " << ButtonState2String(_buttonState));
+} // void buttonState_cb()
+
+geometry_msgs::Pose _pose_target;
+void pose_target_cb(const geometry_msgs::Pose& pose_target)
 {
-    recovery_mode = mode_message;
-}
+    _pose_target = pose_target;
+} // void pose_target_cb()
 
-int button_clicked=0;
-void buttons_callback(const std_msgs::Int32 sub_buttons){
-    button_clicked=sub_buttons.data;
-}
-
-int now_wp=0;
-void now_wp_callback(const std_msgs::Int32& now_wp_){
-    now_wp=now_wp_.data;
-}
-
-vector<int> wp_type;
-void wp_type_callback(const std_msgs::Int32MultiArray& wp_type_){
-    wp_type.resize(wp_type_.data.size());
-    wp_type=wp_type_.data;
-}
-
-nav_msgs::Path path;
-void path_callback(const nav_msgs::Path& path_){
-    path=path_;
-}
-
-geometry_msgs::PoseStamped targetWpPose;
-void targetWpPose_callback(const geometry_msgs::PoseStamped& poseStamp_message)
+geometry_msgs::PoseStamped _pose_targetWp;
+void pose_targetWp_cb(const geometry_msgs::PoseStamped& pose_targetWp)
 {
-    targetWpPose = poseStamp_message;
+    _pose_targetWp = pose_targetWp;
+} // void pose_targetWp_cb()
+
+geometry_msgs::Twist _cmd_vel_mcl;
+void cmd_vel_mcl_cb(const geometry_msgs::Twist& cmd_vel_mcl){
+    _cmd_vel_mcl = cmd_vel_mcl;
+} // void cmd_vel_mcl_cb()
+
+geometry_msgs::Twist _cmd_vel_recov;
+void cmd_vel_recov_cb(const geometry_msgs::Twist& cmd_vel_recov)
+{
+    _cmd_vel_recov = cmd_vel_recov;
+} // void cmd_vel_recov_cb()
+
+geometry_msgs::Twist _cmd_vel_camera;
+void cmd_vel_camera_cb(const geometry_msgs::Twist& cmd_vel_camera)
+{
+    _cmd_vel_camera = cmd_vel_camera;
+} // void cmd_vel_camera_cb()
+
+int32_t _wp_now;
+void wp_now_cb(const std_msgs::Int32& wp_now)
+{
+    _wp_now = wp_now.data;
 }
 
-geometry_msgs::Pose targetPose;
-void targetPose_callback(const geometry_msgs::Pose& pose_message)
-{
-    targetPose = pose_message;
-}
+WaypointType _wpType;
+WaypointType _wpType_old;
+void wpType_cb(const std_msgs::String& wpType){
+    _wpType =  String2WaypointType(wpType.data);
+} // void wpType_cb()
 
-std_msgs::String now_type;
-void now_type_callback(const std_msgs::String& now_type_)
+bool _is_personDetected;
+void detectState_cb(const std_msgs::Float32MultiArray& camera){
+    _is_personDetected = camera.data.at(2);
+} // void detectState_cb()
+
+double getDeltaAngle(double current, double target)
 {
-    now_type=now_type_;
-}
+    double result;
+
+    current -= (2*M_PI) * ((int)(current / (2*M_PI)));
+    target -= (2*M_PI) * ((int)(target / (2*M_PI)));
+
+    if (std::abs(target - current) > M_PI)
+        result = target - current - (target - current)>0?1.0:-1.0 * (2*M_PI);
+    else
+        result = target - current;
+
+    return result;
+} // double getDeltaAngle()
 
 double quat2yaw(geometry_msgs::Quaternion orientation)
 {
     double roll, pitch, yaw;
     tf::Quaternion quat;
     quaternionMsgToTF(orientation, quat);
-    tf::Matrix3x3(quat).getRPY(roll, pitch, yaw);  //rpy are Pass by Reference
-
+    tf::Matrix3x3(quat).getRPY(roll, pitch, yaw);
     return yaw;
-}
-
-double arrangeAngle(double angle)
-{
-    while(angle>M_PI)
-    {
-        angle -= 2*M_PI;
-    }
-    while(angle<-M_PI)
-    {
-        angle += 2*M_PI;
-    }
-
-    return angle;
-}
+} // double quat2yaw
 
 int main(int argc, char **argv){
-    
-    ros::init(argc, argv, "path_tracking_node");
-    ros::NodeHandle n;
-   
-
-    //param setting
+    ros::init(argc, argv, "kcctcore/navigation_master");
+    ros::NodeHandle nh;
     ros::NodeHandle pn("~");
-
-    std::string map_id, base_link_id;
-    pn.param<std::string>("map_frame_id", map_id, "map");
-    pn.param<std::string>("base_link_frame_id", base_link_id, "base_link");
-    double looprate;
-    pn.param<double>("loop_rate",looprate,100.0);
-
-     //制御周期10Hz
-    ros::Rate loop_rate(looprate);
-
     ros::NodeHandle lSubscriber("");
 
-    //cmd_vel subscliber
-    ros::Subscriber mcl_cmd_vel_sub = lSubscriber.subscribe("mcl_cmd_vel", 50, mcl_cmd_vel_callback);
-    //camera_cmd_vel subsliber
-    ros::Subscriber camera_cmd_vel_sub = lSubscriber.subscribe("camera_cmd_vel", 50, camera_cmd_vel_callback);
-    //rviz control panel subscliber
-    ros::Subscriber buttons_sub = lSubscriber.subscribe("buttons", 50, buttons_callback);
-    //waypoint/now subscliber
-    ros::Subscriber now_wp_sub = lSubscriber.subscribe("waypoint/now", 50, now_wp_callback);
-    //waypoint type
-    ros::Subscriber wp_type_sub = lSubscriber.subscribe("waypoint/type", 50, wp_type_callback);
-    ros::Subscriber recovery_cmd_sub = lSubscriber.subscribe("recovery/cmd_vel", 10, recovery_cmd_callback);
-    ros::Subscriber mode_sub = lSubscriber.subscribe("mode_select/mode", 10 , mode_callback);
-    ros::Subscriber recovery_mode_sub = lSubscriber.subscribe("recovery/mode", 10 , recovery_mode_callback);
-    ros::Subscriber targetWpPose_sub = lSubscriber.subscribe("twist_maneger/targetWpPose_in", 50, targetWpPose_callback);
-    ros::Subscriber targetPose_sub = lSubscriber.subscribe("twist_maneger/targetPose_in", 10 , targetPose_callback);
-    ros::Subscriber now_type_sub = lSubscriber.subscribe("waypoint/now_type", 10, now_type_callback);
+    /* Param */
 
-    //cmd_vel publisher
-    ros::Publisher cmd_pub=n.advertise<geometry_msgs::Twist>("selected_cmd_vel", 1);
-    ros::Publisher mode_pub = n.advertise<std_msgs::String>("mode", 10);
+    // from .launch
+    std::string frameId_map, frameId_baseLink;
+    pn.param<std::string>("map_frame_id", frameId_map, "map");
+    pn.param<std::string>("base_link_frame_id", frameId_baseLink, "base_link");
+    
+    double loopRate;
+    pn.param<double>("loop_rate", loopRate, 100.0);
+    ros::Rate rate_roop(loopRate);
 
-    ros::Publisher yolo_pub = n.advertise<std_msgs::Bool>("enable_yolo", 10);
-
-    tf_position nowPosition(map_id, base_link_id, looprate);
-    mode.data = robot_status_str(robot_status::stop);
+    // Class and Structure
+    tf_position pose_now(frameId_map, frameId_baseLink, loopRate);
 
     geometry_msgs::Twist cmd_vel;
-    geometry_msgs::Twist zero_vel;
-    zero_vel.linear.x=0.0;
-    zero_vel.angular.z=0.0;
-    bool pause_mode=true;
+    geometry_msgs::Twist cmd_vel_zero;
+    cmd_vel_zero.linear.x=0.0;
+    cmd_vel_zero.angular.z=0.0;
+
+    // Others
+    bool is_initState = true;
+    bool is_initState_recov = false;
+
+    int32_t wp_recurStart = -1;
+    int32_t recursionCount = 0;
+
+    bool enable_yolo = false;
+
+    /* Publisher */
+    ros::Publisher cmd_vel_pub = nh.advertise<geometry_msgs::Twist>("selected_cmd_vel", 1);
+    ros::Publisher robotState_pub = nh.advertise<std_msgs::String>("mode", 10);
+    ros::Publisher wpOverride_pub = nh.advertise<std_msgs::Int32>("waypoint/set", 1);
+    ros::Publisher yolo_pub = nh.advertise<std_msgs::Bool>("enable_yolo", 10);
+
+    /* Subscriber */
+    ros::Subscriber robotState_sub = lSubscriber.subscribe("mode_select/mode", 10 , robotState_cb);
+    ros::Subscriber robotState_recov_sub = lSubscriber.subscribe("recovery/mode", 10 , robotState_recov_cb);
+    ros::Subscriber buttonState_sub = lSubscriber.subscribe("buttons", 50, buttonState_cb);
+    ros::Subscriber wp_now_sub = lSubscriber.subscribe("waypoint/now", 50, wp_now_cb);
+    ros::Subscriber wpType_sub = lSubscriber.subscribe("waypoint/now_type", 10, wpType_cb);
+    ros::Subscriber cmd_vel_mcl_sub = lSubscriber.subscribe("mcl_cmd_vel", 50, cmd_vel_mcl_cb);
+    ros::Subscriber cmd_vel_recov_sub = lSubscriber.subscribe("recovery/cmd_vel", 10, cmd_vel_recov_cb);
+    ros::Subscriber cmd_vel_camera_sub = lSubscriber.subscribe("camera_cmd_vel", 50, cmd_vel_camera_cb);
+    ros::Subscriber pose_target_sub = lSubscriber.subscribe("twist_maneger/targetPose_in", 10 , pose_target_cb);
+    ros::Subscriber pose_targetWp_sub = lSubscriber.subscribe("twist_maneger/targetWpPose_in", 50, pose_targetWp_cb);
     
-    bool run_init = true;
-    bool recovery_init = false;
-    int wp_stack=0;
+    ros::Subscriber detectState_sub = lSubscriber.subscribe("result", 50, detectState_cb);
 
-    while (n.ok()){
+    while(nh.ok()){
+        
+        cmd_vel=_cmd_vel_mcl;
 
-        if(button_clicked==buttons_status_start){
-            pause_mode=false;
-            mode.data = robot_status_str(robot_status::run);
-
-        }
-        if(button_clicked==buttons_status_pause){
-            pause_mode=true;
-            mode.data = robot_status_str(robot_status::stop);
-        }
-
-        cmd_vel=mcl_cmd_vel;
-
-        if(run_init){
-            //run init mode
-            if(mode.data == robot_status_str(robot_status::run)){
-                double dx = targetPose.position.x - nowPosition.getPose().position.x;
-                double dy = targetPose.position.y - nowPosition.getPose().position.y;
-                double targetAngle = atan2(dy, dx);
-                double diffAngle = arrangeAngle(targetAngle - nowPosition.getYaw());
-
+        /* Initialize */
+        if(is_initState){
+            if(_robotState == RobotState::RUN){
+                double dx = _pose_target.position.x -pose_now.getPose().position.x;
+                double dy = _pose_target.position.y - pose_now.getPose().position.y;
+                double angle_target = atan2(dy, dx);
+                double angle_diff = getDeltaAngle(0, angle_target - pose_now.getYaw());
                 cmd_vel.linear.x = 0;
-                cmd_vel.angular.z = diffAngle * 1.5;
-                if(abs(diffAngle) < 10*M_PI/180){
-                    run_init = false;
-                }
-            }
-        }
+                cmd_vel.angular.z = angle_diff * 1.5;
+                if(abs(angle_diff) < 10*M_PI/180){
+                    is_initState = false;
+                } // if
+            } // if
+        } // if
 
-        //stop
-        if(mode.data == robot_status_str(robot_status::stop)){
-            cmd_vel=zero_vel;
-            run_init = true;
-        }
+        if(is_initState_recov){
+            if(!(_robotState_recov == RobotState::RECOVERY)){
+                is_initState_recov = false;
+                is_initState = true;
+                _robotState = RobotState::RUN;
+            } // if
+        } // if
 
+        /* Input */
+        switch(_buttonState){
+            case ButtonState::START:
+                _robotState = RobotState::RUN;
+                break;
+            case ButtonState::PAUSE:
+                _robotState = RobotState::STOP;
+                break;
+        } // switch(ButtonState)
 
-        //angle adjust
-        if(mode.data == robot_status_str(robot_status::angleAdjust)){
-            double diffAngle = arrangeAngle(quat2yaw(targetWpPose.pose.orientation) - nowPosition.getYaw());
-
-            cmd_vel.linear.x = 0;
-            cmd_vel.angular.z = diffAngle * 1.5;
-            if(abs(diffAngle) < 1*M_PI/180){
-                mode.data = robot_status_str(robot_status::stop);
-            }
-        }
-        if(recovery_mode.data == robot_status_str(robot_status::safety_stop)){
-            mode.data = robot_status_str(robot_status::safety_stop);
-        }
-        if(recovery_mode.data == robot_status_str(robot_status::run) && mode.data == robot_status_str(robot_status::safety_stop)){
-            mode.data = robot_status_str(robot_status::run);
-        }
-
-        //safety stop
-        if(recovery_mode.data == robot_status_str(robot_status::safety_stop)){
-            mode.data = robot_status_str(robot_status::safety_stop);
-        }
-        //end safety stop
-        if(recovery_mode.data == robot_status_str(robot_status::run) && mode.data == robot_status_str(robot_status::safety_stop)){
-            mode.data = robot_status_str(robot_status::run);
-        }
-
-        //recovery mode
-        if(recovery_mode.data == robot_status_str(robot_status::recovery)){
-            recovery_init = true;
-            mode.data = robot_status_str(robot_status::recovery);
-            cmd_vel = recovery_cmd_vel;
-        }
-        if(recovery_init){
-            if(!(recovery_mode.data == robot_status_str(robot_status::recovery))){
-                recovery_init = false;
-
-                run_init = true;
-                mode.data = robot_status_str(robot_status::run);
-            }
-        }
-
-
-        //人検出
-        static bool person_mode=false;
-        static bool person_mode_once=true;
-        static bool person_angle=false;
-        static bool enable_yolo=false;
-        if(now_type.data==waypoint_type_str(waypoint_type::person_detection)){
-            if(person_mode_once){
-                person_mode=true;
-                person_mode_once=false;
-                person_angle=true;
-            }
-        }
-        else{
-            person_mode_once=true;
-            
-        }
-        if(person_mode){
-            // start buttonで通常走行に復帰
-            if(button_clicked==buttons_status_start){
-                person_mode=false;
-                enable_yolo=false;
-            }
-            //角度を合わせてから追従開始
-            else if(person_angle){
-                double dx = targetPose.position.x - nowPosition.getPose().position.x;
-                double dy = targetPose.position.y - nowPosition.getPose().position.y;
-                double targetAngle = atan2(dy, dx);
-                double diffAngle = arrangeAngle(targetAngle - nowPosition.getYaw());
-
+        /* Movement */
+        switch(_robotState){
+            case RobotState::STOP:
+                cmd_vel = cmd_vel_zero;
+                is_initState = true;
+                break;
+            case RobotState::ADJUST_ANGLE:
+                double angle_diff = getDeltaAngle(0, quat2yaw(_pose_targetWp.pose.orientation) - pose_now.getYaw());
                 cmd_vel.linear.x = 0;
-                cmd_vel.angular.z = diffAngle * 1.5;
-                if(abs(diffAngle) < 10*M_PI/180){
-                    person_angle = false;
-                }
-            }
-            else{
-                cmd_vel.linear.x=camera_cmd_vel.linear.x;
-                cmd_vel.angular.z=camera_cmd_vel.angular.z;
-                enable_yolo=true;
-            }
-            
+                cmd_vel.angular.z = angle_diff * 1.5;
+                if(abs(angle_diff) < 1.0*M_PI/180)
+                    _robotState = RobotState::STOP;
+               break;
+        } // switch(RobotState)
+
+        switch(_robotState_recov){
+            case RobotState::SAFETY_STOP:
+                _robotState = RobotState::SAFETY_STOP;
+                break;
+            case RobotState::RUN:
+                if(_robotState == RobotState::SAFETY_STOP)
+                    _robotState = RobotState::RUN;
+                break;
+            case RobotState::RECOVERY:
+                is_initState_recov = true;
+                _robotState = RobotState::RECOVERY;
+                cmd_vel = _cmd_vel_recov;
+                break;
+        } // switch(RobotState)
+
+        /* WaypointType */
+        if(_wpType != _wpType_old){
+            switch(_wpType){
+                case WaypointType::recursion_start:
+                    wp_recurStart = _wp_now;
+                    recursionCount = 0;
+                    break;
+                case WaypointType::recursion_end:
+                    if(wp_recurStart == -1) break;
+                    if(recursionCount > 2)
+                    {
+                        wp_recurStart = -1;
+                    }
+                    else
+                    {
+                        std_msgs::Int32 msg;
+                        msg.data = wp_recurStart + 1;
+                        wpOverride_pub.publish(msg);
+                        recursionCount++;
+                    }
+                    break;
+            } // switch(WaypointType)
+            _wpType_old = _wpType;
         }
+
+        /* Person Tracking */
+        if(wp_recurStart != -1)
+        {
+            if(_buttonState == ButtonState::START)
+            {
+                std_msgs::Int32 msg;
+                msg.data = wp_recurStart + 1;
+                wpOverride_pub.publish(msg);
+                wp_recurStart = -1;
+                enable_yolo = false;
+                _robotState = RobotState::RUN;
+            } // if
+            else if(_is_personDetected)
+            {
+                _robotState = RobotState::PERSON_TRACKING;
+                cmd_vel = _cmd_vel_camera;
+                enable_yolo = true;
+            } // else if
+            else
+            {
+                _robotState = RobotState::RUN;
+                enable_yolo = false;
+            } // else
+        } // if
+
+        /* Publish */
+        cmd_vel_pub.publish(cmd_vel);
+
+        std_msgs::String robotState_msg;
+        robotState_msg.data = RobotState2String(_robotState);
+        robotState_pub.publish(robotState_msg);
 
         std_msgs::Bool enable_yolo_msg;
-        enable_yolo_msg.data=enable_yolo;
+        enable_yolo_msg.data = enable_yolo;
         yolo_pub.publish(enable_yolo_msg);
 
-        cmd_pub.publish(cmd_vel);
-        mode_pub.publish(mode);
-
-        button_clicked=buttons_status_free;
-        ros::spinOnce();//subsucriberの割り込み関数はこの段階で実装される
-        loop_rate.sleep();
-
-    }
-    
+        /* Button Release*/
+        _buttonState = ButtonState::FREE;
+        
+        /* Spin */
+        ros::spinOnce();
+        rate_roop.sleep();
+    } // while
     return 0;
-}
+} // int main()

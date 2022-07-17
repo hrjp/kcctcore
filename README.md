@@ -31,7 +31,7 @@ git clone https://github.com/hrjp/rosenv
 自律移動を行うためのlaunch
 
 ```
-roslanch kcctcore navigation.launch
+roslaunch kcctcore navigation.launch
 ```
 
 #### 操作方法
@@ -61,7 +61,7 @@ waypointのマーキングを行うlaunch
 
 
 ```
-roslanch kcctcore waypoint.launch
+roslaunch kcctcore waypoint.launch
 ```
 
 #### 操作方法
@@ -87,7 +87,7 @@ rvizの左下に表示されるnavigation panelで操作
 ## mapping.launch (simlation環境の2Dmappingは未対応)
 rosbagから地図を作成するlaunch
 ```
-roslanch kcctcore mapping.launch
+roslaunch kcctcore mapping.launch
 ```
 3D Mapは終了時にLeGO-LOAM/LeGO-LOAM/pcdに自動保存される
 
